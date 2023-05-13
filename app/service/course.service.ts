@@ -10,6 +10,9 @@ export class CourseService {
     }
 
     public static async fetchById(course_id: number): Promise<Course|null> {
+        if(!course_id) {
+            return null;
+        }
         return db.getRepository(Course).findOne({
             where: {id: course_id},
             relations: {spaces: true}

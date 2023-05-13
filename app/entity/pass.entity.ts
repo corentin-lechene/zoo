@@ -11,7 +11,7 @@ export class Pass {
 
     @ManyToOne(() => Course, {nullable: true})
     @JoinColumn()
-    course: Course;
+    course: Course | null;
 
     @Column({name: 'price', type: 'float'})
     price: number;
