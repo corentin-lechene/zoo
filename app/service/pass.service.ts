@@ -5,21 +5,21 @@ import {UpdateResult} from "typeorm";
 export class PassService {
     public static async fetchAll(): Promise<Pass[]> {
         return db.getRepository(Pass).find({
-            relations: {course: true}
+            relations: {access: true}
         });
     }
 
     public static async fetchById(pass_id: number): Promise<Pass|null> {
         return db.getRepository(Pass).findOne({
             where: {id: pass_id},
-            relations: {course: true}
+            relations: {access: true}
         });
     }
 
     public static async fetchByName(name: string): Promise<Pass|null> {
         return db.getRepository(Pass).findOne({
             where: {name: name},
-            relations: {course: true}
+            relations: {access: true}
         });
     }
 

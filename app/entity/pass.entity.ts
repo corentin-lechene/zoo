@@ -1,5 +1,11 @@
-import {Entity, PrimaryGeneratedColumn, Column, JoinColumn, ManyToOne, DeleteDateColumn} from 'typeorm';
-import {Course} from "./course.entity";
+import {
+    Entity,
+    PrimaryGeneratedColumn,
+    Column,
+    DeleteDateColumn,
+    ManyToMany, JoinTable
+} from 'typeorm';
+import {Space} from "./space.entity";
 
 @Entity({ name: 'pass' })
 export class Pass {
@@ -9,12 +15,15 @@ export class Pass {
     @Column({name: 'name'})
     name: string;
 
-    @ManyToOne(() => Course, {nullable: true})
-    @JoinColumn()
-    course: Course | null;
+    @ManyToMany(() => Space)
+    @JoinTable()
+    access: Space[];
 
     @Column({name: 'price', type: 'float'})
     price: number;
+
+    @Column({name: 'course', default: false})
+    course: boolean;
 
     @DeleteDateColumn()
     deletedAt: Date;

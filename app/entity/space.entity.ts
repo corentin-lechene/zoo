@@ -1,5 +1,4 @@
-import {Entity, PrimaryGeneratedColumn, Column, ManyToOne, DeleteDateColumn} from 'typeorm';
-import {Course} from "./course.entity";
+import {Entity, PrimaryGeneratedColumn, Column, DeleteDateColumn} from 'typeorm';
 
 @Entity({ name: 'space' })
 export class Space {
@@ -8,9 +7,6 @@ export class Space {
 
     @Column({name: 'name'})
     name: string;
-
-    @ManyToOne(() => Course, (course) => course.spaces)
-    courses: Course[]
 
     @DeleteDateColumn()
     deletedAt: Date;
