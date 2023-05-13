@@ -4,7 +4,6 @@ import {ResponseUtil} from "../util";
 import {RoleEnum, User} from "../entity";
 import {validate} from "class-validator";
 
-const dayjs = require('../config/dayjs.config');
 
 export class UserController {
     public static async fetchAllUsers(req: Request, res: Response): Promise<void> {
@@ -26,8 +25,8 @@ export class UserController {
     }
 
     public static async saveUser(req: Request, res: Response): Promise<void> {
-        const { firstname, lastname, email, password, phone_number } =
-            req.body as { firstname: string, lastname: string, email: string, password: string, phone_number: string, status: string };
+        const { firstname, lastname, email, password } =
+            req.body as { firstname: string, lastname: string, email: string, password: string, status: string };
         const birthday = req.body['birthday'] as unknown as string;
 
         if(!firstname || !lastname || !email || !password || !birthday) {
@@ -51,10 +50,6 @@ export class UserController {
         const errors = await validate(user);
         if(errors.length > 0) {
             return ResponseUtil.badRequest(res);
-        }
-
-        if(await UserService.fetchByEmail(email) !== null) {
-            return ResponseUtil.badRequest(res, "Already Exist");
         }
 
         const requestSaveUser = await UserService.create(user);
