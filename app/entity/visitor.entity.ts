@@ -1,4 +1,4 @@
-import {Entity, PrimaryGeneratedColumn, Column, OneToMany} from 'typeorm';
+import {Entity, PrimaryGeneratedColumn, Column, OneToMany, DeleteDateColumn} from 'typeorm';
 import {Ticket} from "./ticket.entity";
 
 @Entity({ name: 'visitor' })
@@ -20,4 +20,7 @@ export class Visitor {
 
     @Column({name: 'handicap_access'})
     handicapAccess: boolean;
+
+    @DeleteDateColumn()
+    deletedAt: Date;
 }

@@ -1,4 +1,4 @@
-import {Entity, PrimaryGeneratedColumn, Column, JoinColumn, ManyToOne} from 'typeorm';
+import {Entity, PrimaryGeneratedColumn, Column, JoinColumn, ManyToOne, DeleteDateColumn} from 'typeorm';
 import {Visitor} from "./visitor.entity";
 import {Pass} from "./pass.entity";
 
@@ -26,4 +26,7 @@ export class Ticket {
 
     @Column({name: 'status', type: "varchar"})
     status: TicketStatus;
+
+    @DeleteDateColumn()
+    deletedAt: Date;
 }

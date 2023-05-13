@@ -1,4 +1,4 @@
-import {Entity, PrimaryGeneratedColumn, OneToMany} from 'typeorm';
+import {Entity, PrimaryGeneratedColumn, OneToMany, DeleteDateColumn} from 'typeorm';
 import {Space} from "./space.entity";
 
 @Entity({ name: 'course' })
@@ -8,4 +8,7 @@ export class Course {
 
     @OneToMany(() => Space, (space) => space.courses, {cascade: true, onDelete: 'SET NULL'})
     spaces: Space[];
+
+    @DeleteDateColumn()
+    deletedAt: Date;
 }

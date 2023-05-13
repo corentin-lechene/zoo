@@ -1,4 +1,4 @@
-import {Entity, PrimaryGeneratedColumn, Column, JoinColumn, ManyToOne} from 'typeorm';
+import {Entity, PrimaryGeneratedColumn, Column, JoinColumn, ManyToOne, DeleteDateColumn} from 'typeorm';
 import {Course} from "./course.entity";
 
 @Entity({ name: 'pass' })
@@ -15,4 +15,7 @@ export class Pass {
 
     @Column({name: 'price', type: 'float'})
     price: number;
+
+    @DeleteDateColumn()
+    deletedAt: Date;
 }

@@ -5,7 +5,7 @@ import {
     ManyToMany,
     JoinTable,
     CreateDateColumn,
-    UpdateDateColumn
+    UpdateDateColumn, DeleteDateColumn
 } from 'typeorm';
 
 import {
@@ -41,4 +41,7 @@ export class User {
 
     @CreateDateColumn()
     createdAt: Date;
+
+    @DeleteDateColumn()
+    deletedAt: Date;
 }
