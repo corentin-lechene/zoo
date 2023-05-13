@@ -33,7 +33,7 @@ async function upsertRoles() {
 
     const rolesToAdd = rolesName.map((name, roleId) => {
         const role = new Role();
-        role.roleId = roleId + 1;
+        role.id = roleId + 1;
         role.name = name;
         return RoleService.create(role);
     })

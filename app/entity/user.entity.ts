@@ -10,20 +10,14 @@ import {
 
 import {
     Length,
-    IsEmail,
-    IsStrongPassword,
-    IsDate,
-    IsPhoneNumber,
-    IsOptional,
-
 } from 'class-validator';
 
 import {Role} from "./role.entity";
 //todo changer le nom de cette class en employee
 @Entity({ name: 'user' })
 export class User {
-    @PrimaryGeneratedColumn({ name: 'user_id' })
-    userId: number;
+    @PrimaryGeneratedColumn({ name: 'id' })
+    id: number;
 
     @Column({ name: 'firstname', length: 48 })
     @Length(1, 48)

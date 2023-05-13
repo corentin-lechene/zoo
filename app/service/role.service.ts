@@ -9,7 +9,7 @@ export class RoleService {
 
     public static async fetchById(roleId: number): Promise<Role | null> {
         return db.getRepository(Role).findOne({
-            where: {roleId: roleId}
+            where: {id: roleId}
         });
     }
 
@@ -25,13 +25,13 @@ export class RoleService {
 
     public static async delete(role: Role): Promise<UpdateResult> {
         return db.getRepository(Role).softDelete({
-            roleId: role.roleId
+            id: role.id
         })
     }
 
     public static async hardDelete(role: Role): Promise<DeleteResult> {
         return db.getRepository(Role).delete({
-            roleId: role.roleId
+            id: role.id
         });
     }
 
@@ -41,7 +41,7 @@ export class RoleService {
         }
 
         const buildWhere: FindOptionsWhere<Role>[] = ids.map((id) => {
-            return {roleId: id};
+            return {id: id};
         });
         return db.getRepository(Role).find({
             where: buildWhere

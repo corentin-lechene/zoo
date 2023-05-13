@@ -10,17 +10,17 @@ export class UserService {
 
     public static async fetchById(user_id: number): Promise<User|null> {
         return db.getRepository(User).findOne({
-            where: {userId: user_id},
+            where: {id: user_id},
             relations: {roles: true}
         });
     }
 
-    public static async fetchByEmail(email: string): Promise<User|null> {
-        return db.getRepository(User).findOne({
-            where: {},
-            relations: {roles: true}
-        });
-    }
+    // public static async fetchByEmail(email: string): Promise<User|null> {
+    //     return db.getRepository(User).findOne({
+    //         where: {},
+    //         relations: {roles: true}
+    //     });
+    // }
 
     public static async create(user: User): Promise<User|null> {
         return db.getRepository(User).save(user);

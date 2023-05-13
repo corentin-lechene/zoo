@@ -8,8 +8,8 @@ export enum RoleEnum {
 
 @Entity({ name: 'role' })
 export class Role {
-    @PrimaryGeneratedColumn({ name: 'role_id' })
-    roleId: number;
+    @PrimaryGeneratedColumn({ name: 'id' })
+    id: number;
 
     @Column({ name: 'name', length: 48, unique: true })
     name: string;
