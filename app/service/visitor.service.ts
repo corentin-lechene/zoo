@@ -1,5 +1,6 @@
 import {db} from "../config/typeorm.config";
 import {Visitor} from "../entity";
+import {UpdateResult} from "typeorm";
 
 export class VisitorService {
     public static async fetchAll(): Promise<Visitor[]> {
@@ -28,5 +29,9 @@ export class VisitorService {
 
     public static async update(visitor: Visitor): Promise<Visitor> {
         return db.getRepository(Visitor).save(visitor);
+    }
+
+    public static async delete(visitor: Visitor): Promise<UpdateResult> {
+        return db.getRepository(Visitor).softDelete({id: visitor.id});
     }
 }

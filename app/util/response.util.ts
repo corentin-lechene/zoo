@@ -6,6 +6,7 @@ export class ResponseUtil {
     public static readonly FORBIDDEN  = "Forbidden";
     public static readonly NOT_FOUND  = "Not Found";
     public static readonly SOMETHING_WENT_WRONG = "Something Went Wrong";
+    public static readonly ALREADY_EXIST = "Already Exist";
 
     public static ok(res: Response, message?: string): void {
         res.status(200).send(message);
@@ -13,6 +14,10 @@ export class ResponseUtil {
 
     public static missingAttribute(res: Response): void {
         res.status(400).send(this.MISSING_ATTRIBUTE);
+    }
+
+    public static alreadyExist(res: Response) {
+        res.status(400).send(this.ALREADY_EXIST);
     }
 
     public static unauthorized (res: Response): void {
