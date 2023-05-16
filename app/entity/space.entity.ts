@@ -1,4 +1,13 @@
-import {Entity, PrimaryGeneratedColumn, Column, DeleteDateColumn, UpdateDateColumn, CreateDateColumn} from 'typeorm';
+import {
+    Entity,
+    PrimaryGeneratedColumn,
+    Column,
+    DeleteDateColumn,
+    UpdateDateColumn,
+    CreateDateColumn,
+    ManyToOne, OneToMany
+} from 'typeorm';
+import {Maintenance} from "./maintenance.entity";
 
 export enum StatusEnum {
     OPEN = 'OPEN',
@@ -42,6 +51,9 @@ export class Space {
 
     @Column({name: 'status'})
     status: string;
+
+    @OneToMany(() => Maintenance, (maintenance) => maintenance.space)
+    maintenances: Maintenance[];
 
     @CreateDateColumn()
     createdAt: Date;

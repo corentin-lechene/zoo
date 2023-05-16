@@ -1,8 +1,9 @@
 import {Request, Response} from "express";
 import {SpaceService} from "../service";
 import {ResponseUtil} from "../util";
-import {Space} from "../entity";
+import {Space, StatusEnum} from "../entity";
 import * as dayjs from "dayjs";
+import {MaintenanceService} from "../service/maintenance.service";
 
 export class SpaceController {
     public static async fetchAllSpaces(req: Request, res: Response): Promise<void> {
@@ -58,7 +59,22 @@ export class SpaceController {
             return ResponseUtil.notFound(res);
         }
         //TODO : delete if not animals in space
+        await MaintenanceService.deleteBySpace(space);
         await SpaceService.delete(space);
+        ResponseUtil.ok(res);
+    }
+
+    public static async underMaintenanceSpace(req: Request, res: Response):Promise<void> {
+        const spaceId = req.params['space_id'] as unknown as number;
+        if (!spaceId){
+            return ResponseUtil.missingAttribute(res);
+        }
+
+        const space = await SpaceService.fetchById(spaceId);
+        if(!space) return ResponseUtil.notFound(res);
+
+        space.status = StatusEnum.UNDER_MAINTENANCE;
+        await SpaceService.update(space);
         ResponseUtil.ok(res);
     }
 
