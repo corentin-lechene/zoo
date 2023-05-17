@@ -5,7 +5,7 @@ import {
     DeleteDateColumn,
     UpdateDateColumn,
     CreateDateColumn,
-    ManyToOne, OneToMany
+    OneToMany
 } from 'typeorm';
 import {Maintenance} from "./maintenance.entity";
 

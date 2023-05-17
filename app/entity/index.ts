@@ -4,3 +4,4 @@ export * from './pass.entity';
 export * from './ticket.entity';
 export * from './visitor.entity';
 export * from './space.entity';
+export * from './statistics.entity';
