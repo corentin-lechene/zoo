@@ -1,22 +1,5 @@
-import {
-    Entity,
-    PrimaryGeneratedColumn,
-    Column,
-    ManyToMany,
-    JoinTable,
-    CreateDateColumn,
-    UpdateDateColumn
-} from 'typeorm';
-
-import {
-    Length,
-    IsEmail,
-    IsStrongPassword,
-    IsDate,
-    IsPhoneNumber,
-    IsOptional,
-
-} from 'class-validator';
+import {Entity, PrimaryGeneratedColumn, Column} from 'typeorm';
+import {Length} from 'class-validator';
 
 @Entity({name: 'species'})
 export class Species {

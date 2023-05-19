@@ -1,24 +1,5 @@
-import {
-    Entity,
-    PrimaryGeneratedColumn,
-    Column,
-    ManyToMany,
-    JoinTable,
-    CreateDateColumn,
-    UpdateDateColumn,
-    ManyToOne,
-    OneToOne, JoinColumn,
-} from 'typeorm';
-
-import {
-    Length,
-    IsEmail,
-    IsStrongPassword,
-    IsDate,
-    IsPhoneNumber,
-    IsOptional,
-
-} from 'class-validator';
+import {Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn} from 'typeorm';
+import {Length,} from 'class-validator';
 
 import {Animal} from "./animal.entity";
 @Entity({ name: 'tracking_book'})

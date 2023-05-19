@@ -8,7 +8,7 @@ export function checkAnimalBody(): RequestHandler {
             return ResponseUtil.missingAttribute(res);
         }
 
-        // Vérifier les types
+        // Vérifier les types TODO faire comme Mélissa pour les dates
         if (typeof req.body['name'] !== 'string' || !isDate(req.body['birthDate']) ||
             !(req.body['species'] instanceof Species) || !(req.body['space'] instanceof Space) ||
             !isDate(req.body['deathDate'])) {
