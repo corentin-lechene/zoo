@@ -10,6 +10,8 @@ router.get('/tickets/:ticket_id', TicketController.fetchTicket.bind(this));
 
 router.post('/tickets', express.json(), TicketController.createTicket.bind(this));
 
+router.post('/tickets/:ticket_id/activate', TicketController.activeTicket.bind(this));
+
 router.delete('/tickets/:ticket_id', TicketController.deleteTicket.bind(this));
 
 

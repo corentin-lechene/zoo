@@ -1,6 +1,7 @@
-import {Entity, PrimaryGeneratedColumn, Column, JoinColumn, ManyToOne, DeleteDateColumn} from 'typeorm';
+import {Entity, PrimaryGeneratedColumn, Column, JoinColumn, ManyToOne, DeleteDateColumn, OneToMany} from 'typeorm';
 import {Visitor} from "./visitor.entity";
 import {Pass} from "./pass.entity";
+import {TicketHistory} from "./ticketHistory.entity";
 
 export enum TicketStatus {
     VALID = "Valid",
@@ -23,6 +24,12 @@ export class Ticket {
 
     @Column({name: 'purchase_at'})
     purchaseAt: Date;
+
+    @OneToMany(() => TicketHistory, (ticketHistory) => ticketHistory.ticket)
+    ticketHistory: TicketHistory[];
+
+    @Column({name: 'expire_at', nullable: true, default: null})
+    expireAt?: Date;
 
     @Column({name: 'status', type: "varchar"})
     status: TicketStatus;

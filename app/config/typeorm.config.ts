@@ -2,6 +2,7 @@ import {DataSource} from "typeorm";
 import {config} from 'dotenv';
 import {Role, RoleEnum} from "../entity";
 import {RoleService} from "../service";
+import dayjs from './dayjs.config';
 
 config();
 
@@ -15,6 +16,7 @@ export const db = new DataSource({
     username: dbConfig.USERNAME,
     password: dbConfig.PASSWORD,
     database: dbConfig.DATABASE,
+    timezone: dayjs().tz().format('Z'),
     synchronize: true,
     logging: false,
     entities: ["dist/**/*.entity.js"],
