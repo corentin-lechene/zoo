@@ -40,9 +40,8 @@ export class TicketService {
         // Vérifier que le ticket peut être utilisé dans la durée du pass
         if (ticket.ticketHistory.length > 0) {
             const entryAt = ticket.ticketHistory[0].entryAt;
-
             // Vérifier qu'il a pas déjà utilisé aujourd'hui
-            if (dayjs(entryAt).isSame(dayjs(), 'day')) {
+            if (dayjs(ticket.ticketHistory[ticket.ticketHistory.length - 1].entryAt).isSame(dayjs(), 'day')) {
                 console.log("[TEST] Utilisé aujourd'hui");
                 return false;
             }
