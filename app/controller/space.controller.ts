@@ -95,8 +95,8 @@ export class SpaceController {
         newSpace.image = image;
         newSpace.capacity = capacity;
         newSpace.type = type;
-        newSpace.openingTime = dayjs(openingTime).format("HH:mm");
-        newSpace.closureHour = dayjs(closureHour).format("HH:mm");
+        newSpace.openingTime = dayjs(openingTime, 'HH:mm').format('HH:mm');
+        newSpace.closureHour = dayjs(closureHour, 'HH:mm').format('HH:mm');
         newSpace.accessHandicap = accessHandicap;
         newSpace.status = status;
 
