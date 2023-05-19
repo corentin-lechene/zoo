@@ -1,4 +1,24 @@
-import {Entity, PrimaryGeneratedColumn, Column, DeleteDateColumn} from 'typeorm';
+import {
+    Entity,
+    PrimaryGeneratedColumn,
+    Column,
+    DeleteDateColumn,
+    UpdateDateColumn,
+    CreateDateColumn,
+    OneToMany
+} from 'typeorm';
+import {Maintenance} from "./maintenance.entity";
+
+export enum StatusEnum {
+    OPEN = 'OPEN',
+    CLOSED = 'CLOSED',
+    UNDER_MAINTENANCE = 'UNDER MAINTENANCE'
+}
+
+export enum TypeEnum {
+    COURSE = 'COURSE',
+    FREE_EXPOSITION = 'FREE EXPOSITION'
+}
 
 @Entity({ name: 'space' })
 export class Space {
@@ -7,6 +27,39 @@ export class Space {
 
     @Column({name: 'name'})
     name: string;
+
+    @Column({name: 'description'})
+    description: string;
+
+    @Column({name: 'image'})
+    image: string;
+
+    @Column({name: 'capacity'})
+    capacity: number;
+
+    @Column({name: 'type'})
+    type: string;
+
+    @Column({name: 'opening_time'})
+    openingTime: string;
+
+    @Column({name: 'closure_hour'})
+    closureHour: string;
+
+    @Column({name: 'access_handicap'})
+    accessHandicap: boolean;
+
+    @Column({name: 'status'})
+    status: string;
+
+    @OneToMany(() => Maintenance, (maintenance) => maintenance.space)
+    maintenances: Maintenance[];
+
+    @CreateDateColumn()
+    createdAt: Date;
+
+    @UpdateDateColumn()
+    updatedAt: Date;
 
     @DeleteDateColumn()
     deletedAt: Date;

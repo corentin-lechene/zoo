@@ -14,6 +14,12 @@ export class SpaceService {
         });
     }
 
+    public static async fetchByName(space_name: string): Promise<Space|null> {
+        return db.getRepository(Space).findOne({
+            where: {name: space_name},
+        });
+    }
+
     public static async fetchByIds(spaceIds: number[]): Promise<Space[]> {
         const buildWhere: FindOptionsWhere<Space>[] = spaceIds.map((id) => ({id: id}));
         return db.getRepository(Space).find({
@@ -29,7 +35,7 @@ export class SpaceService {
         return db.getRepository(Space).save(space);
     }
 
-    public static async delete(space: Space): Promise<UpdateResult> {
+    public static async delete(space: Space): Promise<UpdateResult>{
         return db.getRepository(Space).softDelete({id: space.id});
     }
 }

@@ -4,3 +4,7 @@ export * from './ticket.service';
 export * from './pass.service';
 export * from './visitor.service';
 export * from './space.service';
+export * from './statistics.service';
+export * from './species.service';
+export * from './animal.service';
+export * from './trackingBook.service';

@@ -5,3 +5,7 @@ export * from './ticket.entity';
 export * from './visitor.entity';
 export * from './space.entity';
 export * from './ticketHistory.entity';
+export * from './statistics.entity';
+export * from './species.entity';
+export * from './animal.entity';
+export * from './trackingBook.entity';
