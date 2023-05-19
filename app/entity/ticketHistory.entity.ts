@@ -1,7 +1,7 @@
 import {Entity, PrimaryGeneratedColumn, Column, DeleteDateColumn, ManyToOne} from 'typeorm';
 import {Ticket} from "./ticket.entity";
 
-@Entity({name: 'Ticket_History'})
+@Entity({name: 'ticket_history'})
 export class TicketHistory {
     @PrimaryGeneratedColumn({name: 'id'})
     id: number;
