@@ -1,9 +1,11 @@
-import {Entity, PrimaryGeneratedColumn, Column, UpdateDateColumn, CreateDateColumn} from 'typeorm';
+import {Entity, PrimaryGeneratedColumn, Column, DeleteDateColumn} from 'typeorm';
 
 export enum RoleEnum {
     ADMIN = 'ADMIN',
-    //todo ajouter les autres roles
-    USER = 'USER',
+    RECEPTIONIST = 'RECEPTIONIST',
+    HEALER = 'HEALER',
+    CLEANER = 'CLEANER',
+    SELLER = 'SELLER',
     VETERINARIAN = 'VETERINARIAN'
 }
 
@@ -15,9 +17,6 @@ export class Role {
     @Column({ name: 'name', length: 48, unique: true })
     name: string;
 
-    @UpdateDateColumn()
-    updatedAt: Date;
-
-    @CreateDateColumn()
-    createdAt: Date;
+    @DeleteDateColumn()
+    deletedAt: Date;
 }

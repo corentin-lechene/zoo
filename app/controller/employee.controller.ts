@@ -1,22 +1,23 @@
 import {Request, Response} from "express";
-import {RoleService, UserService} from "../service";
+import {RoleService, EmployeeService} from "../service";
 import {ResponseUtil} from "../util";
-import {RoleEnum, User} from "../entity";
+import {RoleEnum, Employee} from "../entity";
 import {validate} from "class-validator";
+import PwdUtil from "../util/pwd.util";
 
 
-export class UserController {
-    public static async fetchAllUsers(req: Request, res: Response): Promise<void> {
-        res.json(await UserService.fetchAll());
+export class EmployeeController {
+    public static async fetchAllEmployees(req: Request, res: Response): Promise<void> {
+        res.json(await EmployeeService.fetchAll());
     }
 
-    public static async fetchUserByUserId(req: Request, res: Response): Promise<void> {
+    public static async fetchEmployeeByEmployeeId(req: Request, res: Response): Promise<void> {
         const user_id = req.params['user_id'] as unknown as number;
         if(!user_id || user_id < 0) {
             return ResponseUtil.badRequest(res);
         }
 
-        const user = await UserService.fetchById(user_id);
+        const user = await EmployeeService.fetchById(user_id);
         if(!user) {
             return ResponseUtil.notFound(res);
         }
@@ -24,39 +25,39 @@ export class UserController {
         res.json(user);
     }
 
-    public static async saveUser(req: Request, res: Response): Promise<void> {
-        const { firstname, lastname, email, password } =
-            req.body as { firstname: string, lastname: string, email: string, password: string, status: string };
+    public static async saveEmployee(req: Request, res: Response): Promise<void> {
+        const { firstname, lastname, password, status } =
+            req.body as { firstname: string, lastname: string, password: string, status: string };
         const birthday = req.body['birthday'] as unknown as string;
 
-        if(!firstname || !lastname || !email || !password || !birthday) {
+        if(!firstname || !lastname || !password || !birthday) {
             return ResponseUtil.missingAttribute(res);
         }
 
-        const user = new User();
+        const user = new Employee();
         user.firstname = firstname;
         user.lastname = lastname;
+        user.password = await PwdUtil.hash(password);
         user.roles = [];
 
         // set default
-        const defaultRole = await RoleService.fetchByName(RoleEnum.USER);
+        const defaultRole = await RoleService.fetchByName(RoleEnum[status.toUpperCase() as keyof typeof RoleEnum]);
         if(!defaultRole) {
             return ResponseUtil.serverError(res, 'Role Cannot Found');
         }
 
         user.roles = [defaultRole];
-        user.status = "PENDING";
 
         const errors = await validate(user);
         if(errors.length > 0) {
             return ResponseUtil.badRequest(res);
         }
 
-        const requestSaveUser = await UserService.create(user);
-        if(!requestSaveUser) {
+        const requestSaveEmployee = await EmployeeService.create(user);
+        if(!requestSaveEmployee) {
             return ResponseUtil.serverError(res);
         }
-        res.status(201).json(requestSaveUser);
+        res.status(201).json(requestSaveEmployee);
     }
 
     public static async updateRoles(req: Request, res: Response): Promise<void> {
@@ -72,7 +73,7 @@ export class UserController {
             return ResponseUtil.missingAttribute(res);
         }
 
-        const user = await UserService.fetchById(user_id);
+        const user = await EmployeeService.fetchById(user_id);
         if(!user) {
             return ResponseUtil.notFound(res);
         }
@@ -83,7 +84,7 @@ export class UserController {
         }
 
         user.roles = newRoles;
-        await UserService.update(user);
+        await EmployeeService.update(user);
         ResponseUtil.ok(res);
     }
 }
