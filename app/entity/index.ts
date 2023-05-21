@@ -9,3 +9,4 @@ export * from './statistics.entity';
 export * from './species.entity';
 export * from './animal.entity';
 export * from './trackingBook.entity';
+export * from './maintenance.entity';
