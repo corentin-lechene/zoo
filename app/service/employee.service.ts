@@ -1,6 +1,6 @@
 import {db} from "../config/typeorm.config";
 import {Employee} from "../entity";
-import {UpdateResult} from "typeorm";
+import {Like, UpdateResult} from "typeorm";
 
 export class EmployeeService {
     public static async fetchAll(): Promise<Employee[]> {
@@ -17,14 +17,13 @@ export class EmployeeService {
     }
 
     static async fetchByIdentifier(identifier: string, password: string): Promise<Employee|null> {
-        if(identifier.length < 2) {
+        if(identifier.length < 2 || !password) {
             return null;
         }
         return db.getRepository(Employee).findOne({
             where: {
-                firstname: identifier[0],
-                lastname: identifier.slice(1),
-                password: password
+                firstname: Like(`${identifier[0].toLowerCase()}%`),
+                lastname: identifier.slice(1).toLowerCase(),
             },
             relations: {roles: true}
         })

@@ -26,26 +26,23 @@ export class EmployeeController {
     }
 
     public static async saveEmployee(req: Request, res: Response): Promise<void> {
-        const { firstname, lastname, password, status } =
-            req.body as { firstname: string, lastname: string, password: string, status: string };
-        const birthday = req.body['birthday'] as unknown as string;
+        const { firstname, lastname, password, role } =
+            req.body as { firstname: string, lastname: string, password: string, role: string };
 
-        if(!firstname || !lastname || !password || !birthday) {
+        if(!firstname || !lastname || !password || !role) {
             return ResponseUtil.missingAttribute(res);
         }
 
-        const user = new Employee();
-        user.firstname = firstname;
-        user.lastname = lastname;
-        user.password = await PwdUtil.hash(password);
-        user.roles = [];
-
-        // set default
-        const defaultRole = await RoleService.fetchByName(RoleEnum[status.toUpperCase() as keyof typeof RoleEnum]);
+        // fetch role
+        const defaultRole = await RoleService.fetchByName(role.toUpperCase());
         if(!defaultRole) {
             return ResponseUtil.serverError(res, 'Role Cannot Found');
         }
 
+        const user = new Employee();
+        user.firstname = firstname.toLowerCase();
+        user.lastname = lastname.toLowerCase();
+        user.password = await PwdUtil.hash(password);
         user.roles = [defaultRole];
 
         const errors = await validate(user);
