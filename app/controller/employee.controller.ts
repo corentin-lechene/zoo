@@ -1,7 +1,7 @@
 import {Request, Response} from "express";
 import {RoleService, EmployeeService} from "../service";
 import {ResponseUtil} from "../util";
-import {RoleEnum, Employee} from "../entity";
+import {Employee, EmployeeStatus} from "../entity";
 import {validate} from "class-validator";
 import PwdUtil from "../util/pwd.util";
 
@@ -82,6 +82,28 @@ export class EmployeeController {
 
         user.roles = newRoles;
         await EmployeeService.update(user);
+        ResponseUtil.ok(res);
+    }
+
+    static async updateStatus(req: Request, res: Response): Promise<void> {
+        const employee_id = req.params['employee_id'] as unknown as number;
+        const status = req.body['status'] as unknown as string;
+
+        if(!employee_id || !status) {
+            return ResponseUtil.missingAttribute(res);
+        }
+
+        if(!Object.keys(EmployeeStatus).some(s => s === status)) {
+            return ResponseUtil.invalidAttributes(res);
+        }
+
+        const employee = await EmployeeService.fetchById(employee_id);
+        if(!employee) {
+            return ResponseUtil.notFound(res);
+        }
+
+        employee.status = status as EmployeeStatus;
+        await EmployeeService.update(employee);
         ResponseUtil.ok(res);
     }
 }

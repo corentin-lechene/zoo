@@ -15,4 +15,6 @@ router.post('/employees', checkUserToken(), checkUserRoles([RoleEnum.ADMIN]), ex
 
 router.put('/employees/:employee_id/roles/', express.json(), EmployeeController.updateRoles.bind(this));
 
+router.patch('/employees/:employee_id/status', checkUserToken(), express.json(), EmployeeController.updateStatus.bind(this));
+
 module.exports = router;
