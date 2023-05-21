@@ -31,3 +31,18 @@ export function checkBody(): RequestHandler {
         next();
     }
 }
+
+export function checkBodyManageSpace(): RequestHandler {
+    return async function (req: Request, res, next) {
+        //Check si tous les champs sont remplis
+        if(!req.params['space_id'] || !req.body['ticket_id']) {
+            return ResponseUtil.missingAttribute(res);
+        }
+
+        //Check le type
+        if(typeof req.body['ticket_id'] != "number") {
+            return ResponseUtil.badRequest(res);
+        }
+        next();
+    }
+}

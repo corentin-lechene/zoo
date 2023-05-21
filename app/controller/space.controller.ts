@@ -4,6 +4,9 @@ import {ResponseUtil} from "../util";
 import {Space, StatusEnum} from "../entity";
 import * as dayjs from "dayjs";
 import {MaintenanceService} from "../service/maintenance.service";
+import {SpaceHistoryService} from "../service/spaceHistory.service";
+import {TicketHistoryService} from "../service/ticketHistoty.service";
+import e = require("express");
 
 export class SpaceController {
     public static async fetchAllSpaces(req: Request, res: Response): Promise<void> {
@@ -76,6 +79,43 @@ export class SpaceController {
         space.status = StatusEnum.UNDER_MAINTENANCE;
         await SpaceService.update(space);
         ResponseUtil.ok(res);
+    }
+
+    public static async enterSpace(req: Request, res: Response): Promise<void> {
+        const spaceId = req.params['space_id'] as unknown as number;
+        const ticketId = req.body['ticket_id'] as unknown as number;
+
+        const space = await SpaceService.fetchById(spaceId);
+        const ticketHistory = await TicketHistoryService.fetchByTicket(ticketId);
+
+        if(!space || !ticketHistory) return ResponseUtil.notFound(res);
+        const spaceHistory = await SpaceHistoryService.fetchBySpaceAndTicket(ticketId, spaceId);
+        if(spaceHistory) return ResponseUtil.alreadyExist(res);
+
+
+        await SpaceHistoryService.attachToSpaceHistory(ticketHistory.ticket, space);
+        ResponseUtil.created(res);
+    }
+
+    public static async exitSpace(req: Request, res: Response): Promise<void> {
+        const spaceId = req.params['space_id'] as unknown as number;
+        const ticketId = req.body['ticket_id'] as unknown as number;
+
+        const space = await SpaceService.fetchById(spaceId);
+        const spaceHistory = await SpaceHistoryService.fetchBySpaceAndTicket(ticketId, spaceId);
+
+        if(!space || !spaceHistory) return ResponseUtil.notFound(res);
+
+        await SpaceHistoryService.delete(spaceHistory);
+        ResponseUtil.ok(res);
+    }
+
+    public static async fetchVisitorsNumber(req: Request, res: Response): Promise<Promise<e.Response> | Promise<void>>{
+        const spaceId = req.params['space_id'] as unknown as number;
+        if(!spaceId) return ResponseUtil.missingAttribute(res);
+
+        const realNumberVisitor: number = await SpaceHistoryService.getRealVisitorsNumber(spaceId)
+        return res.status(200).json({visitorsNumber : realNumberVisitor})
     }
 
     private static createModelSpace(req: Request) {

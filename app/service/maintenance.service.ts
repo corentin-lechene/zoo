@@ -27,6 +27,6 @@ export class MaintenanceService {
     }
 
     public static async deleteBySpace(space: Space): Promise<UpdateResult>{
-        return db.getRepository(Maintenance).softDelete({space: space});
+        return db.getRepository(Maintenance).softDelete({space: {id: space.id}});
     }
 }

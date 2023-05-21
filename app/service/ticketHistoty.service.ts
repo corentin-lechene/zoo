@@ -1,6 +1,6 @@
 import { db } from "../config/typeorm.config";
 import {Ticket, TicketHistory} from "../entity";
-import { UpdateResult } from "typeorm";
+import {Like, UpdateResult} from "typeorm";
 
 export class TicketHistoryService {
     public static async fetchAll(): Promise<TicketHistory[]> {
@@ -10,6 +10,17 @@ export class TicketHistoryService {
     public static async fetchById(ticketHistoryId: number): Promise<TicketHistory | null> {
         return db.getRepository(TicketHistory).findOne({
             where: { id: ticketHistoryId },
+        });
+    }
+
+    public static async fetchByTicket(ticket_id: number): Promise<TicketHistory | null> {
+        return db.getRepository(TicketHistory).findOne({
+            relations: {ticket: true},
+            where: {
+                ticket: {
+                    id: ticket_id
+                }
+            }
         });
     }
 
