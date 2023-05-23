@@ -1,6 +1,6 @@
 import { db } from "../config/typeorm.config";
 import {Ticket, TicketHistory} from "../entity";
-import {Like, UpdateResult} from "typeorm";
+import {UpdateResult} from "typeorm";
 
 export class TicketHistoryService {
     public static async fetchAll(): Promise<TicketHistory[]> {

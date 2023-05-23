@@ -94,7 +94,7 @@ export class SpaceController {
 
 
         await SpaceHistoryService.attachToSpaceHistory(ticketHistory.ticket, space);
-        ResponseUtil.created(res);
+        ResponseUtil.ok(res);
     }
 
     public static async exitSpace(req: Request, res: Response): Promise<void> {

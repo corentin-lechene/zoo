@@ -1,7 +1,8 @@
 import { db } from "../config/typeorm.config";
-import { UpdateResult } from "typeorm";
+import {Between, Like, UpdateResult} from "typeorm";
 import {SpaceHistory} from "../entity/spaceHistory.entity";
 import {Space, Ticket} from "../entity";
+import * as dayjs from "dayjs";
 
 export class SpaceHistoryService {
     public static async fetchAll(): Promise<SpaceHistory[]> {
@@ -39,12 +40,13 @@ export class SpaceHistoryService {
         });
     }
 
-    public static async getVisitorsNumber(spaceId: number): Promise<number> {
+    public static async getVisitorsNumberBetweenDate(spaceId: number, from: string, to: string): Promise<number> {
         return db.getRepository(SpaceHistory).count({
             where: {
                 space: {
                     id: spaceId
-                }
+                },
+                entryAt: Between(dayjs(from).toDate(), dayjs(to).toDate())
             },
             withDeleted: true
         });

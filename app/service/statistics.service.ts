@@ -1,20 +1,33 @@
 import {db} from "../config/typeorm.config";
-import {UpdateResult} from "typeorm";
-import {Maintenance} from "../entity/maintenance.entity";
-import {Space} from "../entity";
+import {Space, Statistics} from "../entity";
+import {SpaceHistoryService} from "./spaceHistory.service";
+import {SpaceService} from "./space.service";
 
 export class StatisticsService {
-    //hebdo
+    public static async fetchAll(): Promise<Statistics[]> {
+        return db.getRepository(Statistics).find({});
+    }
 
-    //quotidiennes
+    public static async create(statistics: Statistics): Promise<Statistics> {
+        return db.getRepository(Statistics).save(statistics);
+    }
 
-    //mensuelle
+    public static async saveStatistics(from: string, to:string): Promise<void> {
 
-    //annuel
+        //TODO : fetch all spaces
+        const number = await SpaceHistoryService.getVisitorsNumberBetweenDate(1, from, to);
+        if(number === 0 ) return;
 
-    //zoo
+        //create Statistics
+        const statistics = new Statistics();
+        const space = await SpaceService.fetchById(1);
 
-    //espaces en temps réels
-
-    //mois avec le moins de visiteur
+        if(!space) {
+            console.log("PROBLEM !!");
+            return;
+        }
+        statistics.space = space;
+        statistics.visitorsNumber = number;
+        await StatisticsService.create(statistics);
+    }
 }
