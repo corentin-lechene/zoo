@@ -1,8 +1,8 @@
 import {Request, Response} from "express";
-import {SpaceService} from "../service";
+import {SpaceService, StatisticsService} from "../service";
 import {ResponseUtil} from "../util";
-import {Space, StatusEnum} from "../entity";
-import * as dayjs from "dayjs";
+import {Space, StatusEnum, typeStatsEnum} from "../entity";
+import dayjs from "../config/dayjs.config";
 import {MaintenanceService} from "../service/maintenance.service";
 import {SpaceHistoryService} from "../service/spaceHistory.service";
 import {TicketHistoryService} from "../service/ticketHistoty.service";
@@ -61,7 +61,7 @@ export class SpaceController {
         if(!space){
             return ResponseUtil.notFound(res);
         }
-        //TODO : delete if not animals in space
+
         await MaintenanceService.deleteBySpace(space);
         await SpaceService.delete(space);
         ResponseUtil.ok(res);
@@ -81,6 +81,21 @@ export class SpaceController {
         ResponseUtil.ok(res);
     }
 
+    public static async fetchBestMonthToMaintain(req: Request, res: Response):Promise<Promise<e.Response> | Promise<void>> {
+        const spaceId = req.params['space_id'] as unknown as number;
+        if (!spaceId){
+            return ResponseUtil.missingAttribute(res);
+        }
+
+        const space = await SpaceService.fetchById(spaceId);
+        if(!space) return ResponseUtil.notFound(res);
+
+        const statistics = await StatisticsService.fetchAllByASCVisitorsNumber(typeStatsEnum.MONTHLY_STATS, spaceId);
+        if (statistics.length === 0) return ResponseUtil.noContent(res);
+        const bestMonth = dayjs(statistics[0].from).add(1, 'day').format("MM");
+        return res.status(200).json({Month : bestMonth});
+    }
+
     public static async enterSpace(req: Request, res: Response): Promise<void> {
         const spaceId = req.params['space_id'] as unknown as number;
         const ticketId = req.body['ticket_id'] as unknown as number;
@@ -89,12 +104,11 @@ export class SpaceController {
         const ticketHistory = await TicketHistoryService.fetchByTicket(ticketId);
 
         if(!space || !ticketHistory) return ResponseUtil.notFound(res);
-        const spaceHistory = await SpaceHistoryService.fetchBySpaceAndTicket(ticketId, spaceId);
+        const spaceHistory = await SpaceHistoryService.fetchByTicket(ticketId);
         if(spaceHistory) return ResponseUtil.alreadyExist(res);
 
-
         await SpaceHistoryService.attachToSpaceHistory(ticketHistory.ticket, space);
-        ResponseUtil.created(res);
+        ResponseUtil.ok(res);
     }
 
     public static async exitSpace(req: Request, res: Response): Promise<void> {
@@ -102,7 +116,7 @@ export class SpaceController {
         const ticketId = req.body['ticket_id'] as unknown as number;
 
         const space = await SpaceService.fetchById(spaceId);
-        const spaceHistory = await SpaceHistoryService.fetchBySpaceAndTicket(ticketId, spaceId);
+        const spaceHistory = await SpaceHistoryService.fetchByTicketAndSpace(ticketId, spaceId);
 
         if(!space || !spaceHistory) return ResponseUtil.notFound(res);
 
@@ -114,7 +128,7 @@ export class SpaceController {
         const spaceId = req.params['space_id'] as unknown as number;
         if(!spaceId) return ResponseUtil.missingAttribute(res);
 
-        const realNumberVisitor: number = await SpaceHistoryService.getRealVisitorsNumber(spaceId)
+        const realNumberVisitor: number = await SpaceHistoryService.getRealVisitorsNumberBySpace(spaceId)
         return res.status(200).json({visitorsNumber : realNumberVisitor})
     }
 

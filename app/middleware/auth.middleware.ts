@@ -1,6 +1,5 @@
 import { Request, RequestHandler } from "express";
 import { ResponseUtil } from "../util";
-import { UserService } from "../service";
 import { RoleEnum, User } from "../entity";
 
 declare module 'express' {

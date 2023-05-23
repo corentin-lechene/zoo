@@ -1,5 +1,5 @@
 import { db } from "../config/typeorm.config";
-import { UpdateResult } from "typeorm";
+import {Between, UpdateResult} from "typeorm";
 import {SpaceHistory} from "../entity/spaceHistory.entity";
 import {Space, Ticket} from "../entity";
 
@@ -16,20 +16,30 @@ export class SpaceHistoryService {
         return this.create(spaceHistory);
     }
 
-    public static async fetchBySpaceAndTicket(ticketId: number, spaceId: number): Promise<SpaceHistory | null> {
+    public static async fetchByTicket(ticketId: number): Promise<SpaceHistory | null> {
         return db.getRepository(SpaceHistory).findOne({
             where: {
                ticket: {
                    id: ticketId
-               },
+               }
+            }
+        });
+    }
+
+    public static async fetchByTicketAndSpace(ticketId: number, spaceId: number): Promise<SpaceHistory | null> {
+        return db.getRepository(SpaceHistory).findOne({
+            where: {
+                ticket: {
+                    id: ticketId
+                },
                 space: {
-                   id: spaceId
+                    id: spaceId
                 }
             }
         });
     }
 
-    public static async getRealVisitorsNumber(spaceId: number): Promise<number> {
+    public static async getRealVisitorsNumberBySpace(spaceId: number): Promise<number> {
         return db.getRepository(SpaceHistory).count({
             where: {
                 space: {
@@ -39,12 +49,13 @@ export class SpaceHistoryService {
         });
     }
 
-    public static async getVisitorsNumber(spaceId: number): Promise<number> {
+    public static async getVisitorsNumberBetweenDate(spaceId: number, from: Date, to: Date): Promise<number> {
         return db.getRepository(SpaceHistory).count({
             where: {
                 space: {
                     id: spaceId
-                }
+                },
+                entryAt: Between(from, to)
             },
             withDeleted: true
         });

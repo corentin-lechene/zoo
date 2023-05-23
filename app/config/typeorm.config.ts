@@ -42,7 +42,6 @@ async function upsertRoles() {
     await Promise.all(rolesToAdd);
 }
 
-
 export async function initialize_typeorm(db: DataSource) {
     await db.initialize();
     await upsertRoles();

@@ -4,6 +4,7 @@ import {Router} from "express";
 import {config} from 'dotenv';
 
 import {db, initialize_typeorm} from "./app/config/typeorm.config";
+import {startCronTasks} from './app/config/crone.config'
 import {logRoute, undefinedRoute} from "./app/middleware";
 
 config();
@@ -28,6 +29,9 @@ export async function startServer() {
 
     // init dataSource
     await initialize_typeorm(db);
+
+    //startCrone
+    await startCronTasks();
 
     app.listen(PORT, async () => {
         console.log(`Server started at http://localhost:${PORT}/`);
