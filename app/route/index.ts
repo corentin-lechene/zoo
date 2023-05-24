@@ -1,3 +1,4 @@
+export * as zooRoute from "./zoo.route";
 export * as employeeRoute from "./employee.route";
 export * as roleRoute from './role.route';
 export * as passRoute from './pass.route';

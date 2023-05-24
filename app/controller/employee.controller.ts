@@ -1,5 +1,5 @@
 import {Request, Response} from "express";
-import {RoleService, EmployeeService} from "../service";
+import {EmployeeService, RoleService} from "../service";
 import {ResponseUtil} from "../util";
 import {Employee, EmployeeStatus} from "../entity";
 import {validate} from "class-validator";
@@ -12,17 +12,17 @@ export class EmployeeController {
     }
 
     public static async fetchEmployeeByEmployeeId(req: Request, res: Response): Promise<void> {
-        const user_id = req.params['user_id'] as unknown as number;
-        if(!user_id || user_id < 0) {
-            return ResponseUtil.badRequest(res);
+        const employee_id = req.params['employee_id'] as unknown as number;
+        if(!employee_id || employee_id < 0) {
+            return ResponseUtil.missingAttribute(res);
         }
 
-        const user = await EmployeeService.fetchById(user_id);
-        if(!user) {
+        const employee = await EmployeeService.fetchById(employee_id);
+        if(!employee) {
             return ResponseUtil.notFound(res);
         }
 
-        res.json(user);
+        res.json(employee);
     }
 
     public static async saveEmployee(req: Request, res: Response): Promise<void> {
@@ -44,6 +44,7 @@ export class EmployeeController {
         user.lastname = lastname.toLowerCase();
         user.password = await PwdUtil.hash(password);
         user.roles = [defaultRole];
+        user.status = EmployeeStatus.UNKNOWN;
 
         const errors = await validate(user);
         if(errors.length > 0) {
@@ -83,6 +84,10 @@ export class EmployeeController {
         user.roles = newRoles;
         await EmployeeService.update(user);
         ResponseUtil.ok(res);
+    }
+
+    public static async fetchEmployeeWhoWorks(req: Request, res: Response): Promise<void> {
+        res.json(await EmployeeService.fetchEmployeeWhoWorks());
     }
 
     static async updateStatus(req: Request, res: Response): Promise<void> {

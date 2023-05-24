@@ -1,8 +1,16 @@
 import {db} from "../config/typeorm.config";
-import {Employee} from "../entity";
+import {Employee, EmployeeStatus} from "../entity";
 import {Like, UpdateResult} from "typeorm";
 
 export class EmployeeService {
+    public static async fetchEmployeeWhoWorks(): Promise<Employee[]> {
+        return db.getRepository(Employee).find({
+            where: {
+                status: EmployeeStatus.PRESENT
+            },
+            relations: {roles: true}
+        });
+    }
     public static async fetchAll(): Promise<Employee[]> {
         return db.getRepository(Employee).find({
             relations: {roles: true}

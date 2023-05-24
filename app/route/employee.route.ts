@@ -9,7 +9,9 @@ const router = express.Router();
 
 router.get('/employees', EmployeeController.fetchAllEmployees.bind(this));
 
-router.get('/employees/:employee_id', EmployeeController.fetchEmployeeByEmployeeId.bind(this));
+router.get('/employees/works', checkUserToken(), EmployeeController.fetchEmployeeWhoWorks.bind(this));
+
+router.get('/employees/:employee_id', checkUserToken(), EmployeeController.fetchEmployeeByEmployeeId.bind(this));
 
 router.post('/employees', checkUserToken(), checkUserRoles([RoleEnum.ADMIN]), express.json(), EmployeeController.saveEmployee.bind(this));
 
