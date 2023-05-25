@@ -14,17 +14,7 @@ export class SpaceController {
     }
 
     public static async fetchSpaceById(req: Request, res: Response): Promise<void> {
-        const spaceId = req.params['space_id'] as unknown as number;
-        if (!spaceId){
-            return ResponseUtil.missingAttribute(res);
-        }
-
-        const space = await SpaceService.fetchById(spaceId);
-        if(!space){
-            return ResponseUtil.notFound(res);
-        }
-
-        res.status(200).json(space);
+        res.status(200).json(req.space);
     }
 
     public static async createSpace(req: Request, res: Response): Promise<void> {
@@ -37,60 +27,30 @@ export class SpaceController {
     }
 
     public static async updateSpace(req: Request, res: Response): Promise<void> {
-        const spaceId = req.params['space_id'] as unknown as number;
-        if (!spaceId){
-            return ResponseUtil.missingAttribute(res);
-        }
-
-        const space = await SpaceService.fetchById(spaceId);
-        if(!space) return ResponseUtil.notFound(res);
-
         const updatedSpace  = SpaceController.createModelSpace(req);
-        updatedSpace.id = space.id;
+        if(!req.space) return ResponseUtil.notFound(res);
+        updatedSpace.id = req.space.id;
         await SpaceService.update(updatedSpace);
         ResponseUtil.ok(res);
     }
 
     public static async deleteSpace(req: Request, res: Response):Promise<void> {
-        const spaceId = req.params['space_id'] as unknown as number;
-        if (!spaceId){
-            return ResponseUtil.missingAttribute(res);
-        }
-
-        const space = await SpaceService.fetchById(spaceId);
-        if(!space){
-            return ResponseUtil.notFound(res);
-        }
-
-        await MaintenanceService.deleteBySpace(space);
-        await SpaceService.delete(space);
+        if(!req.space) return ResponseUtil.notFound(res);
+        await MaintenanceService.deleteBySpace(req.space);
+        await SpaceService.delete(req.space);
         ResponseUtil.ok(res);
     }
 
     public static async underMaintenanceSpace(req: Request, res: Response):Promise<void> {
-        const spaceId = req.params['space_id'] as unknown as number;
-        if (!spaceId){
-            return ResponseUtil.missingAttribute(res);
-        }
-
-        const space = await SpaceService.fetchById(spaceId);
-        if(!space) return ResponseUtil.notFound(res);
-
-        space.status = StatusEnum.UNDER_MAINTENANCE;
-        await SpaceService.update(space);
+        if(!req.space) return ResponseUtil.notFound(res);
+        req.space.status = StatusEnum.UNDER_MAINTENANCE;
+        await SpaceService.update(req.space);
         ResponseUtil.ok(res);
     }
 
     public static async fetchBestMonthToMaintain(req: Request, res: Response):Promise<Promise<e.Response> | Promise<void>> {
-        const spaceId = req.params['space_id'] as unknown as number;
-        if (!spaceId){
-            return ResponseUtil.missingAttribute(res);
-        }
-
-        const space = await SpaceService.fetchById(spaceId);
-        if(!space) return ResponseUtil.notFound(res);
-
-        const statistics = await StatisticsService.fetchAllByASCVisitorsNumber(typeStatsEnum.MONTHLY_STATS, spaceId);
+        if(!req.space) return ResponseUtil.notFound(res);
+        const statistics = await StatisticsService.fetchAllByASCVisitorsNumber(typeStatsEnum.MONTHLY_STATS, req.space.id);
         if (statistics.length === 0) return ResponseUtil.noContent(res);
         const bestMonth = dayjs(statistics[0].from).add(1, 'day').format("MM");
         return res.status(200).json({Month : bestMonth});
@@ -125,10 +85,8 @@ export class SpaceController {
     }
 
     public static async fetchVisitorsNumber(req: Request, res: Response): Promise<Promise<e.Response> | Promise<void>>{
-        const spaceId = req.params['space_id'] as unknown as number;
-        if(!spaceId) return ResponseUtil.missingAttribute(res);
-
-        const realNumberVisitor: number = await SpaceHistoryService.getRealVisitorsNumberBySpace(spaceId)
+        if(!req.space) return ResponseUtil.notFound(res);
+        const realNumberVisitor: number = await SpaceHistoryService.getRealVisitorsNumberBySpace(req.space.id)
         return res.status(200).json({visitorsNumber : realNumberVisitor})
     }
 
