@@ -20,13 +20,10 @@ services:
       - MYSQL_PORT=${MYSQL_PORT}
 
   mysql:
-    build: ./app/config/.
-    image: mysql
+    image: mysql:latest
     restart: always
     ports:
       - "3307:3307"
     environment:
       - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - MYSQL_USER=${MYSQL_USERNAME}
-      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_ROOT_PASSWORD=${MYSQL_PASSWORD}
