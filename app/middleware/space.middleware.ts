@@ -1,6 +1,6 @@
 import {Request, RequestHandler} from "express";
 import {ResponseUtil} from "../util";
-import {StatusEnum, TypeEnum} from "../entity";
+import {SpaceStatus, TypeEnum} from "../entity";
 
 export function checkBody(): RequestHandler {
     return async function (req: Request, res, next) {
@@ -22,8 +22,8 @@ export function checkBody(): RequestHandler {
 
         //Check si type et status contient bien les enumérations
         if(!(req.body['type'] === TypeEnum.COURSE || req.body['type'] === TypeEnum.FREE_EXPOSITION) ||
-            !(req.body['status'] === StatusEnum.OPEN || req.body['status'] === StatusEnum.CLOSED ||
-                req.body['status'] === StatusEnum.UNDER_MAINTENANCE)){
+            !(req.body['status'] === SpaceStatus.OPEN || req.body['status'] === SpaceStatus.CLOSED ||
+                req.body['status'] === SpaceStatus.UNDER_MAINTENANCE)){
             return ResponseUtil.badRequest(res);
         }
 

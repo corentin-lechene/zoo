@@ -1,7 +1,7 @@
 import {Request, Response} from "express";
 import {SpaceService} from "../service";
 import {ResponseUtil} from "../util";
-import {Space, StatusEnum} from "../entity";
+import {Space, SpaceStatus} from "../entity";
 import * as dayjs from "dayjs";
 import {MaintenanceService} from "../service/maintenance.service";
 
@@ -48,6 +48,37 @@ export class SpaceController {
         ResponseUtil.ok(res);
     }
 
+    public static async updateStatus(req: Request, res: Response): Promise<void> {
+        const spaceId = req.params['space_id'] as unknown as number;
+        const status = req.body['status'] as unknown as string;
+
+        if(!spaceId || !status) {
+            return ResponseUtil.missingAttribute(res);
+        }
+
+        if(![SpaceStatus.OPEN, SpaceStatus.CLOSED].some(s => s === status)) {
+            return ResponseUtil.invalidAttributes(res);
+        }
+
+        const space = await SpaceService.fetchById(spaceId);
+        if(!space) {
+            return ResponseUtil.notFound(res);
+        }
+
+        if(space.status === SpaceStatus.UNDER_MAINTENANCE) {
+            return ResponseUtil.badRequest(res, 'Space under maintenance');
+        }
+
+        space.status = status as SpaceStatus;
+        try {
+            await SpaceService.update(space);
+            ResponseUtil.ok(res);
+        } catch (e) {
+            console.error(e);
+            ResponseUtil.serverError(res);
+        }
+    }
+
     public static async deleteSpace(req: Request, res: Response):Promise<void> {
         const spaceId = req.params['space_id'] as unknown as number;
         if (!spaceId){
@@ -73,7 +104,7 @@ export class SpaceController {
         const space = await SpaceService.fetchById(spaceId);
         if(!space) return ResponseUtil.notFound(res);
 
-        space.status = StatusEnum.UNDER_MAINTENANCE;
+        space.status = SpaceStatus.UNDER_MAINTENANCE;
         await SpaceService.update(space);
         ResponseUtil.ok(res);
     }
