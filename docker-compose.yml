@@ -1,0 +1,32 @@
+version: '3.1'
+
+services:
+
+  api:
+    build: .
+    image: zoo_api
+    restart: always
+    depends_on:
+      - mysql
+    ports:
+      - "${APP_PORT}:3000"
+
+    environment:
+      - MYSQL_HOST=mysql
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USERNAME=${MYSQL_USERNAME}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_TYPE=${MYSQL_TYPE}
+      - MYSQL_PORT=${MYSQL_PORT}
+
+  mysql:
+    build: ./app/config/.
+    image: mysql
+    restart: always
+    ports:
+      - "3307:3307"
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_USER=${MYSQL_USERNAME}
+      - MYSQL_ROOT_PASSWORD=root
