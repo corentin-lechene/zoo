@@ -1,25 +1,20 @@
 import { Request, RequestHandler } from "express";
 import { ResponseUtil } from "../util";
 import {Space, Species} from "../entity";
+import * as dayjs from "dayjs";
 export function checkAnimalBody(): RequestHandler {
     return async function (req: Request, res, next) {
         // Vérifier si tous les champs sont remplis
-        if (!req.body['name'] || !req.body['birthDate'] || !req.body['species'] || !req.body['space']) {
+        if (!req.body['name'] || !req.body['birthDate'] || !req.body['specieId'] || !req.body['spaceId']) {
             return ResponseUtil.missingAttribute(res);
         }
 
-        // Vérifier les types TODO faire comme Mélissa pour les dates
-        if (typeof req.body['name'] !== 'string' || !isDate(req.body['birthDate']) ||
-            !(req.body['species'] instanceof Species) || !(req.body['space'] instanceof Space) ||
-            !isDate(req.body['deathDate'])) {
-            return ResponseUtil.badRequest(res);
+        if (typeof req.body['name'] !== 'string' || !dayjs(req.body['birthDate'], "YYYY-MM-DD").isValid() || typeof req.body['specieId'] !== 'number'
+            || typeof req.body['spaceId'] !== 'number') {
+            return ResponseUtil.badRequest(res, 'Date');
         }
 
         next();
     };
-}
-
-function isDate(dateString: string): boolean {
-    return !isNaN(Date.parse(dateString));
 }
 

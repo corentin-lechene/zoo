@@ -5,9 +5,11 @@ import {
     DeleteDateColumn,
     UpdateDateColumn,
     CreateDateColumn,
-    OneToMany
+    OneToMany, VirtualColumn
 } from 'typeorm';
 import {Maintenance} from "./maintenance.entity";
+import {Species} from "./species.entity";
+import {Animal} from "./animal.entity";
 
 export enum StatusEnum {
     OPEN = 'OPEN',
@@ -36,6 +38,9 @@ export class Space {
 
     @Column({name: 'capacity'})
     capacity: number;
+
+    @OneToMany(() => Animal, (animal) => animal.space)
+    animals: Animal[];
 
     @Column({name: 'type'})
     type: string;

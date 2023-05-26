@@ -1,4 +1,4 @@
-import {Entity, PrimaryGeneratedColumn, Column, ManyToOne,} from 'typeorm';
+import {Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany,} from 'typeorm';
 import {Length,} from 'class-validator';
 
 import {Species} from "./species.entity";
@@ -21,7 +21,7 @@ export class Animal {
     deathDate?: Date;
 
     @ManyToOne(() => Species)
-    species: Species[];
+    specie: Species;
 
     @ManyToOne(() => Space)
     space: Space;

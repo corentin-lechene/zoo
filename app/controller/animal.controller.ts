@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { ResponseUtil } from "../util";
-import {AnimalService, SpeciesService} from "../service";
+import {AnimalService, SpaceService, SpeciesService} from "../service";
 import {Animal, Space, Species} from "../entity";
 import { validate } from "class-validator";
 
@@ -25,54 +25,46 @@ export class AnimalController {
     }
 
     public static async createAnimal(req: Request, res: Response): Promise<void> {
-        const { name, birthDate, deathDate, species, space } = req.body as {
+        const { name, birthDate, specieId, spaceId } = req.body as {
             name: string;
             birthDate: Date;
-            deathDate?: Date;
-            species: Species[];
-            space: Space;
+            specieId: number;
+            spaceId: number;
         };
 
-        if (!name || !birthDate || !species || !space) {
+        if (!name || !birthDate || !specieId || !spaceId) {
             return ResponseUtil.missingAttribute(res);
         }
+
+        // Fetch space
+        const space = await SpaceService.fetchById(spaceId);
+        if(!space) { return ResponseUtil.notFound(res); }
+
+        const specie = await SpeciesService.fetchById(specieId);
+        if(!specie) { return ResponseUtil.notFound(res); }
 
         const animal = new Animal();
         animal.name = name;
         animal.birthDate = birthDate;
-        animal.deathDate = deathDate;
         animal.space = space;
+        animal.specie = specie;
 
         const errors = await validate(animal);
         if (errors.length > 0) {
             return ResponseUtil.badRequest(res, errors.toString());
         }
 
-        const createdSpecies: Species[] = [];
-
-        //Add species
-        for (let i = 0; i < species.length; i++) {
-            const newSpecies = new Species();
-            newSpecies.name = species[i].name;
-            newSpecies.origin = species[i].origin;
-            const errorsSpecies = await validate(newSpecies);
-            if (errorsSpecies.length > 0) {
-                return ResponseUtil.badRequest(res, errorsSpecies.toString());
+        try {
+            const createdAnimal = await AnimalService.create(animal);
+            if (!createdAnimal) {
+                return ResponseUtil.serverError(res);
             }
-            const savedSpecies = await SpeciesService.create(newSpecies);
-            if (savedSpecies instanceof Species) {
-                createdSpecies.push(savedSpecies);
-            }
+            res.status(201).json(createdAnimal);
+        } catch (e) {
+            console.error(e);
+            ResponseUtil.serverError(res);
         }
 
-        animal.species = createdSpecies;
-
-        const createdAnimal = await AnimalService.create(animal);
-        if (!createdAnimal) {
-            return ResponseUtil.serverError(res);
-        }
-
-        res.status(201).json(createdAnimal);
     }
 
 
@@ -82,7 +74,7 @@ export class AnimalController {
             name: string;
             birthDate: Date;
             deathDate?: Date;
-            species: Species[];
+            species: Species;
             space: Space;
         };
 
@@ -104,25 +96,6 @@ export class AnimalController {
         if (errors.length > 0) {
             return ResponseUtil.badRequest(res, errors.toString());
         }
-
-        const createdSpecies: Species[] = [];
-
-        //Update species
-        for (let i = 0; i < species.length; i++) {
-            const newSpecies = new Species();
-            newSpecies.name = species[i].name;
-            newSpecies.origin = species[i].origin;
-            const errorsSpecies = await validate(newSpecies);
-            if (errorsSpecies.length > 0) {
-                return ResponseUtil.badRequest(res, errorsSpecies.toString());
-            }
-            const savedSpecies = await SpeciesService.create(newSpecies);
-            if (savedSpecies instanceof Species) {
-                createdSpecies.push(savedSpecies);
-            }
-        }
-
-        animal.species = createdSpecies;
 
         await AnimalService.update(animal);
         ResponseUtil.ok(res);
