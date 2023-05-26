@@ -11,7 +11,7 @@ const dbConfig = require('./db.config');
 export const db = new DataSource({
     type: dbConfig.type,
     host: dbConfig.HOST,
-    port: process.env.MYSQL_PORT as unknown as number || 3308,
+    port: process.env.MYSQL_PORT as unknown as number || 3306,
     username: dbConfig.USERNAME,
     password: dbConfig.PASSWORD,
     database: dbConfig.DATABASE,
