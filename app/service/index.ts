@@ -1,4 +1,4 @@
-export * from './user.service';
+export * from './employee.service';
 export * from './role.service';
 export * from './ticket.service';
 export * from './pass.service';
