@@ -1,7 +1,7 @@
 import {Request, Response} from "express";
 import {SpaceService} from "../service";
 import {ResponseUtil} from "../util";
-import {Space, SpaceStatus} from "../entity";
+import {RoleEnum, Space, SpaceStatus} from "../entity";
 import * as dayjs from "dayjs";
 import {MaintenanceService} from "../service/maintenance.service";
 
@@ -108,6 +108,28 @@ export class SpaceController {
         await SpaceService.update(space);
         ResponseUtil.ok(res);
     }
+
+    public static async validateUserAccess(req: Request, res: Response): Promise<void> {
+        const spaceId = req.params["space_id"] as unknown as number;
+        if (!spaceId) {
+            return ResponseUtil.missingAttribute(res);
+        }
+
+        const space = await SpaceService.fetchById(spaceId);
+        if (!space) return ResponseUtil.notFound(res);
+
+        if (!req.user) {
+            return ResponseUtil.unauthorized(res);
+        }
+
+        const userRoles = req.user.roles.map((role) => role.name);
+        if (!userRoles.includes(RoleEnum.ADMIN)) {
+            return ResponseUtil.forbidden(res);
+        }
+
+        ResponseUtil.ok(res, "User has access to the space");
+    }
+
 
     private static createModelSpace(req: Request) {
         const name: string = req.body['name'];
