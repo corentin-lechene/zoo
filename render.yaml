@@ -1,8 +1,0 @@
-services:
-  # A Docker database
-  - type: pserv
-    name: zoo-database
-    env: docker
-    repo: https://github.com/corentin-lechene/zoo.git
-    branch: feature/docker
-    dockerfilePath: ./config/.
