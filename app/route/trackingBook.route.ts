@@ -18,7 +18,7 @@ router.put('/trackingBook/:trackingBookId', express.json(), checkUserRoles([Role
     TrackingBookController.updateTrackingBook.bind(this)
 );
 
-router.delete('/trackingBook/:trackingBookId', checkUserRoles([RoleEnum.VETERINARIAN]), TrackingBookController.deleteTrackingBook.bind(this)
+router.delete('/trackingBook/:trackingBookId', checkUserRoles([RoleEnum.ADMIN]), TrackingBookController.deleteTrackingBook.bind(this)
 );
 
 module.exports = router;

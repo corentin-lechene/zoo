@@ -1,7 +1,7 @@
 import {Request, Response} from "express";
 import {SpaceService, StatisticsService} from "../service";
 import {ResponseUtil} from "../util";
-import {Space, StatusEnum, SpaceStatus, typeStatsEnum} from "../entity";
+import {RoleEnum, Space, StatusEnum, SpaceStatus, typeStatsEnum} from "../entity";
 import dayjs from "../config/dayjs.config";
 import {MaintenanceService} from "../service/maintenance.service";
 import {SpaceHistoryService} from "../service/spaceHistory.service";
@@ -117,6 +117,28 @@ export class SpaceController {
         await SpaceService.update(space);
         ResponseUtil.ok(res);
     }
+
+    public static async validateUserAccess(req: Request, res: Response): Promise<void> {
+        const spaceId = req.params["space_id"] as unknown as number;
+        if (!spaceId) {
+            return ResponseUtil.missingAttribute(res);
+        }
+
+        const space = await SpaceService.fetchById(spaceId);
+        if (!space) return ResponseUtil.notFound(res);
+
+        if (!req.user) {
+            return ResponseUtil.unauthorized(res);
+        }
+
+        const userRoles = req.user.roles.map((role) => role.name);
+        if (!userRoles.includes(RoleEnum.ADMIN)) {
+            return ResponseUtil.forbidden(res);
+        }
+
+        ResponseUtil.ok(res, "User has access to the space");
+    }
+
 
     public static async fetchVisitorsNumber(req: Request, res: Response): Promise<Promise<e.Response> | Promise<void>>{
         if(!req.space) return ResponseUtil.notFound(res);

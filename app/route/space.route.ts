@@ -14,12 +14,15 @@ router.get('/spaces/:space_id/actualVisitors', SpaceController.fetchVisitorsNumb
 
 router.get('/spaces/:space_id/bestMonthToMaintain', SpaceController.fetchBestMonthToMaintain.bind(this));
 
-router.post('/spaces', express.json(), checkBody(), SpaceController.createSpace.bind(this));
+router.post('/spaces', express.json(), checkUserToken(), checkBody(), SpaceController.createSpace.bind(this));
 
+router.put('/spaces/:space_id', express.json(), checkUserToken(), checkBody(), SpaceController.updateSpace.bind(this));
 router.post('/spaces/:space_id/enter', express.json(), checkBodyManageSpace(), SpaceController.enterSpace.bind(this));
 
-router.put('/spaces/:space_id', express.json(), checkBody(), checkIfSpaceExist(),SpaceController.updateSpace.bind(this));
 
+router.get("/spaces/:space_id/validateAccess", checkUserToken(), SpaceController.validateUserAccess.bind(this));
+
+router.delete('/spaces/:space_id',  checkUserRoles([RoleEnum.ADMIN]), SpaceController.deleteSpace.bind(this));
 router.put('/spaces/underMaintenance/:space_id', express.json(), checkUserRoles([RoleEnum.ADMIN]), SpaceController.underMaintenanceSpace.bind(this));
 
 router.delete('/spaces/:space_id', checkIfSpaceExist(), SpaceController.deleteSpace.bind(this));

@@ -5,8 +5,8 @@ export class AnimalService {
     public static async fetchAll(): Promise<Animal[]> {
         return db.getRepository(Animal).find({
             relations: {
-                species: true,
-                space: true
+                space: true,
+                specie: true,
             },
         });
     }
@@ -15,8 +15,8 @@ export class AnimalService {
         return db.getRepository(Animal).findOne({
             where: {animalId: animal_id},
             relations: {
-                species: true,
-                space: true
+                space: true,
+                specie: true,
             },
         });
     }
