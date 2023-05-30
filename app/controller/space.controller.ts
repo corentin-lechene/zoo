@@ -1,12 +1,11 @@
 import {Request, Response} from "express";
 import {SpaceService, StatisticsService} from "../service";
 import {ResponseUtil} from "../util";
-import {RoleEnum, Space, StatusEnum, SpaceStatus, typeStatsEnum} from "../entity";
+import {RoleEnum, Space, SpaceStatus, typeStatsEnum} from "../entity";
 import dayjs from "../config/dayjs.config";
 import {MaintenanceService} from "../service/maintenance.service";
 import {SpaceHistoryService} from "../service/spaceHistory.service";
 import {TicketHistoryService} from "../service/ticketHistoty.service";
-import e = require("express");
 
 export class SpaceController {
     public static async fetchAllSpaces(req: Request, res: Response): Promise<void> {
@@ -74,17 +73,17 @@ export class SpaceController {
 
     public static async underMaintenanceSpace(req: Request, res: Response):Promise<void> {
         if(!req.space) return ResponseUtil.notFound(res);
-        req.space.status = StatusEnum.UNDER_MAINTENANCE;
+        req.space.status = SpaceStatus.UNDER_MAINTENANCE;
         await SpaceService.update(req.space);
         ResponseUtil.ok(res);
     }
 
-    public static async fetchBestMonthToMaintain(req: Request, res: Response):Promise<Promise<e.Response> | Promise<void>> {
+    public static async fetchBestMonthToMaintain(req: Request, res: Response): Promise<void> {
         if(!req.space) return ResponseUtil.notFound(res);
         const statistics = await StatisticsService.fetchAllByASCVisitorsNumber(typeStatsEnum.MONTHLY_STATS, req.space.id);
         if (statistics.length === 0) return ResponseUtil.noContent(res);
         const bestMonth = dayjs(statistics[0].from).add(1, 'day').format("MM");
-        return res.status(200).json({Month : bestMonth});
+        res.status(200).json({Month : bestMonth});
     }
 
     public static async enterSpace(req: Request, res: Response): Promise<void> {
@@ -132,7 +131,7 @@ export class SpaceController {
         }
 
         const userRoles = req.user.roles.map((role) => role.name);
-        if (!userRoles.includes(RoleEnum.ADMIN)) {
+        if (!userRoles.some(role => role === RoleEnum.ADMIN)) {
             return ResponseUtil.forbidden(res);
         }
 
@@ -140,10 +139,10 @@ export class SpaceController {
     }
 
 
-    public static async fetchVisitorsNumber(req: Request, res: Response): Promise<Promise<e.Response> | Promise<void>>{
+    public static async fetchVisitorsNumber(req: Request, res: Response): Promise<void>{
         if(!req.space) return ResponseUtil.notFound(res);
         const realNumberVisitor: number = await SpaceHistoryService.getRealVisitorsNumberBySpace(req.space.id)
-        return res.status(200).json({visitorsNumber : realNumberVisitor})
+        res.status(200).json({visitorsNumber : realNumberVisitor})
     }
 
     private static createModelSpace(req: Request) {

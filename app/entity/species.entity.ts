@@ -1,7 +1,5 @@
-import {Entity, PrimaryGeneratedColumn, Column, ManyToOne} from 'typeorm';
+import {Entity, PrimaryGeneratedColumn, Column} from 'typeorm';
 import {Length} from 'class-validator';
-import {Space} from "./space.entity";
-import {Animal} from "./animal.entity";
 
 @Entity({name: 'species'})
 export class Species {

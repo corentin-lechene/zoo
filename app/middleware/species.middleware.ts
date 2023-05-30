@@ -12,5 +12,7 @@ export function checkSpeciesBody(): RequestHandler {
         if(typeof req.body['name'] !== "string" || typeof req.body['origin'] !== "string") {
             return ResponseUtil.badRequest(res);
         }
+
+        next();
     }
 }

@@ -1,6 +1,5 @@
 import { Request, RequestHandler } from "express";
 import { ResponseUtil } from "../util";
-import {Space, Species} from "../entity";
 import * as dayjs from "dayjs";
 export function checkAnimalBody(): RequestHandler {
     return async function (req: Request, res, next) {

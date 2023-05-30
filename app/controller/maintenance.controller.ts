@@ -3,7 +3,7 @@ import {SpaceService} from "../service";
 import {ResponseUtil} from "../util";
 import * as dayjs from "dayjs";
 import {MaintenanceService} from "../service/maintenance.service";
-import {Maintenance} from "../entity/maintenance.entity";
+import {Maintenance} from "../entity";
 
 export class MaintenanceController {
     public static async fetchAllMaintenances(req: Request, res: Response): Promise<void> {

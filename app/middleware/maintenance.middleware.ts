@@ -1,7 +1,7 @@
 import {Request, RequestHandler} from "express";
 import {ResponseUtil} from "../util";
 import * as dayjs from "dayjs";
-import {Maintenance} from "../entity/maintenance.entity";
+import {Maintenance} from "../entity";
 import {MaintenanceService} from "../service/maintenance.service";
 
 declare module 'express' {

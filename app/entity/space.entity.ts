@@ -5,10 +5,9 @@ import {
     DeleteDateColumn,
     UpdateDateColumn,
     CreateDateColumn,
-    OneToMany, VirtualColumn
+    OneToMany
 } from 'typeorm';
 import {Maintenance} from "./maintenance.entity";
-import {Species} from "./species.entity";
 import {Animal} from "./animal.entity";
 import {SpaceHistory} from "./spaceHistory.entity";
 

@@ -1,4 +1,4 @@
-import e, {Request, Response} from "express";
+import {Request, Response} from "express";
 import {PassService, TicketService, VisitorService} from "../service";
 import {ResponseUtil} from "../util";
 import {Ticket, TicketStatus} from "../entity";
@@ -55,9 +55,9 @@ export class TicketController {
         ResponseUtil.ok(res);
     }
 
-    public static async fetchVisitorsNumber(req: Request, res: Response): Promise<Promise<e.Response> | Promise<void>> {
+    public static async fetchVisitorsNumber(req: Request, res: Response): Promise<void> {
         const realVisitorsNumber = await TicketHistoryService.getRealVisitorsNumber();
-        return res.status(200).json({visitors_number : realVisitorsNumber});
+        res.status(200).json({visitors_number : realVisitorsNumber});
     }
 
     public static async fetchAllTickets(req: Request, res: Response): Promise<void> {

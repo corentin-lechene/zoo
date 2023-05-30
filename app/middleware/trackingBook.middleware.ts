@@ -14,6 +14,7 @@ export function checkTrackingBookBody(): RequestHandler {
             !(req.body['animal'] instanceof Animal)) {
             return ResponseUtil.badRequest(res);
         }
+        next();
     }
 }
 

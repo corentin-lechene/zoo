@@ -1,6 +1,6 @@
 import {Request, RequestHandler} from "express";
 import {ResponseUtil} from "../util";
-import {Space, StatusEnum, TypeEnum, SpaceStatus, TypeEnum} from "../entity";
+import {Space, SpaceStatus, TypeEnum} from "../entity";
 import {SpaceService} from "../service";
 
 declare module 'express' {

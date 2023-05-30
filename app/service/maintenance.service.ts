@@ -1,6 +1,6 @@
 import {db} from "../config/typeorm.config";
 import {UpdateResult} from "typeorm";
-import {Maintenance} from "../entity/maintenance.entity";
+import {Maintenance} from "../entity";
 import {Space} from "../entity";
 
 export class MaintenanceService {

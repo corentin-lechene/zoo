@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { ResponseUtil } from "../util";
-import {SpeciesService, TrackingBookService} from "../service";
+import {TrackingBookService} from "../service";
 import { Animal, TrackingBook } from "../entity";
 import { validate } from "class-validator";
 
