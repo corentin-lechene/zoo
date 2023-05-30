@@ -1,20 +1,81 @@
 import {db} from "../config/typeorm.config";
-import {UpdateResult} from "typeorm";
-import {Maintenance} from "../entity/maintenance.entity";
-import {Space} from "../entity";
+import {Statistics} from "../entity";
+import {SpaceHistoryService} from "./spaceHistory.service";
+import {SpaceService} from "./space.service";
 
 export class StatisticsService {
-    //hebdo
+    public static async fetchAll(): Promise<Statistics[]> {
+        return db.getRepository(Statistics).find({
+            relations: {
+                space: true
+            }
+        });
+    }
 
-    //quotidiennes
+    public static async fetchBySpace(spaceId: number): Promise<Statistics[]> {
+        return db.getRepository(Statistics).find({
+            relations: {
+                space: true
+            },
+            where: {
+                space: {
+                    id: spaceId
+                }
+            }
+        });
+    }
 
-    //mensuelle
+    public static async fetchByTypeAndSpace(type: string, spaceId: number): Promise<Statistics[]> {
+        return db.getRepository(Statistics).find({
+            relations: {
+                space: true
+            },
+            where: {
+                type: type,
+                space: {
+                    id: spaceId
+                }
+            }
+        });
+    }
 
-    //annuel
+    public static async fetchAllByASCVisitorsNumber(type: string, spaceId: number): Promise<Statistics[]> {
+        return db.getRepository(Statistics).find({
+            relations: {
+                space: true
+            },
+            where: {
+                type: type,
+                space: {
+                    id: spaceId
+                }
+            },
+            order: {
+                visitorsNumber: "ASC"
+            }
+        });
+    }
 
-    //zoo
+    public static async saveStatistics(from:Date, to:Date, type: string): Promise<void> {
+        const spaces = await SpaceService.fetchAll();
 
-    //espaces en temps réels
+        if(spaces.length === 0) return ;
 
-    //mois avec le moins de visiteur
+        for(const space of spaces) {
+            const number =  await SpaceHistoryService.getVisitorsNumberBetweenDate(space.id, from, to);
+            if(number === 0 ) return;
+
+            const statistics = new Statistics();
+            statistics.space = space;
+            statistics.visitorsNumber = number;
+            statistics.type = type;
+            statistics.from = from;
+            statistics.to = to;
+            await StatisticsService.create(statistics);
+        }
+    }
+
+    public static async create(statistics: Statistics): Promise<Statistics> {
+        return db.getRepository(Statistics).save(statistics);
+    }
 }

@@ -1,9 +1,12 @@
 import {Request, Response} from "express";
-import {SpaceService} from "../service";
+import {SpaceService, StatisticsService} from "../service";
 import {ResponseUtil} from "../util";
-import {Space, SpaceStatus} from "../entity";
-import * as dayjs from "dayjs";
+import {Space, StatusEnum, SpaceStatus, typeStatsEnum} from "../entity";
+import dayjs from "../config/dayjs.config";
 import {MaintenanceService} from "../service/maintenance.service";
+import {SpaceHistoryService} from "../service/spaceHistory.service";
+import {TicketHistoryService} from "../service/ticketHistoty.service";
+import e = require("express");
 
 export class SpaceController {
     public static async fetchAllSpaces(req: Request, res: Response): Promise<void> {
@@ -11,17 +14,7 @@ export class SpaceController {
     }
 
     public static async fetchSpaceById(req: Request, res: Response): Promise<void> {
-        const spaceId = req.params['space_id'] as unknown as number;
-        if (!spaceId){
-            return ResponseUtil.missingAttribute(res);
-        }
-
-        const space = await SpaceService.fetchById(spaceId);
-        if(!space){
-            return ResponseUtil.notFound(res);
-        }
-
-        res.status(200).json(space);
+        res.status(200).json(req.space);
     }
 
     public static async createSpace(req: Request, res: Response): Promise<void> {
@@ -34,16 +27,9 @@ export class SpaceController {
     }
 
     public static async updateSpace(req: Request, res: Response): Promise<void> {
-        const spaceId = req.params['space_id'] as unknown as number;
-        if (!spaceId){
-            return ResponseUtil.missingAttribute(res);
-        }
-
-        const space = await SpaceService.fetchById(spaceId);
-        if(!space) return ResponseUtil.notFound(res);
-
         const updatedSpace  = SpaceController.createModelSpace(req);
-        updatedSpace.id = space.id;
+        if(!req.space) return ResponseUtil.notFound(res);
+        updatedSpace.id = req.space.id;
         await SpaceService.update(updatedSpace);
         ResponseUtil.ok(res);
     }
@@ -80,33 +66,62 @@ export class SpaceController {
     }
 
     public static async deleteSpace(req: Request, res: Response):Promise<void> {
-        const spaceId = req.params['space_id'] as unknown as number;
-        if (!spaceId){
-            return ResponseUtil.missingAttribute(res);
-        }
-
-        const space = await SpaceService.fetchById(spaceId);
-        if(!space){
-            return ResponseUtil.notFound(res);
-        }
-        //TODO : delete if not animals in space
-        await MaintenanceService.deleteBySpace(space);
-        await SpaceService.delete(space);
+        if(!req.space) return ResponseUtil.notFound(res);
+        await MaintenanceService.deleteBySpace(req.space);
+        await SpaceService.delete(req.space);
         ResponseUtil.ok(res);
     }
 
     public static async underMaintenanceSpace(req: Request, res: Response):Promise<void> {
+        if(!req.space) return ResponseUtil.notFound(res);
+        req.space.status = StatusEnum.UNDER_MAINTENANCE;
+        await SpaceService.update(req.space);
+        ResponseUtil.ok(res);
+    }
+
+    public static async fetchBestMonthToMaintain(req: Request, res: Response):Promise<Promise<e.Response> | Promise<void>> {
+        if(!req.space) return ResponseUtil.notFound(res);
+        const statistics = await StatisticsService.fetchAllByASCVisitorsNumber(typeStatsEnum.MONTHLY_STATS, req.space.id);
+        if (statistics.length === 0) return ResponseUtil.noContent(res);
+        const bestMonth = dayjs(statistics[0].from).add(1, 'day').format("MM");
+        return res.status(200).json({Month : bestMonth});
+    }
+
+    public static async enterSpace(req: Request, res: Response): Promise<void> {
         const spaceId = req.params['space_id'] as unknown as number;
-        if (!spaceId){
-            return ResponseUtil.missingAttribute(res);
-        }
+        const ticketId = req.body['ticket_id'] as unknown as number;
 
         const space = await SpaceService.fetchById(spaceId);
-        if(!space) return ResponseUtil.notFound(res);
+        const ticketHistory = await TicketHistoryService.fetchByTicket(ticketId);
 
+        if(!space || !ticketHistory) return ResponseUtil.notFound(res);
+        const spaceHistory = await SpaceHistoryService.fetchByTicket(ticketId);
+        if(spaceHistory) return ResponseUtil.alreadyExist(res);
+
+        await SpaceHistoryService.attachToSpaceHistory(ticketHistory.ticket, space);
+        ResponseUtil.ok(res);
+    }
+
+    public static async exitSpace(req: Request, res: Response): Promise<void> {
+        const spaceId = req.params['space_id'] as unknown as number;
+        const ticketId = req.body['ticket_id'] as unknown as number;
+
+        const space = await SpaceService.fetchById(spaceId);
+        const spaceHistory = await SpaceHistoryService.fetchByTicketAndSpace(ticketId, spaceId);
+
+        if(!space || !spaceHistory) return ResponseUtil.notFound(res);
+
+
+        await SpaceHistoryService.delete(spaceHistory);
         space.status = SpaceStatus.UNDER_MAINTENANCE;
         await SpaceService.update(space);
         ResponseUtil.ok(res);
+    }
+
+    public static async fetchVisitorsNumber(req: Request, res: Response): Promise<Promise<e.Response> | Promise<void>>{
+        if(!req.space) return ResponseUtil.notFound(res);
+        const realNumberVisitor: number = await SpaceHistoryService.getRealVisitorsNumberBySpace(req.space.id)
+        return res.status(200).json({visitorsNumber : realNumberVisitor})
     }
 
     private static createModelSpace(req: Request) {

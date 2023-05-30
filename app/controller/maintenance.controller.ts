@@ -11,17 +11,7 @@ export class MaintenanceController {
     }
 
     public static async fetchMaintenanceById(req: Request, res: Response): Promise<void> {
-        const maintenanceId = req.params['maintenance_id'] as unknown as number;
-        if (!maintenanceId){
-            return ResponseUtil.missingAttribute(res);
-        }
-
-        const maintenance = await MaintenanceService.fetchById(maintenanceId);
-        if(!maintenance){
-            return ResponseUtil.notFound(res);
-        }
-
-        res.status(200).json(maintenance);
+        res.status(200).json(req.maintenance);
     }
 
     public static async createMaintenance(req: Request, res: Response): Promise<void> {
@@ -30,39 +20,24 @@ export class MaintenanceController {
 
         const newMaintenance= MaintenanceController.createMaintenanceModel(req);
         newMaintenance.space = space;
-
         await MaintenanceService.create(newMaintenance);
         ResponseUtil.created(res);
     }
 
     public static async updateMaintenance(req: Request, res: Response): Promise<void> {
-        const maintenanceId = req.params['maintenance_id'] as unknown as number;
-        if (!maintenanceId){
-            return ResponseUtil.missingAttribute(res);
-        }
-
-        const maintenance = await MaintenanceService.fetchById(maintenanceId);
-        if(!maintenance) return ResponseUtil.notFound(res);
-
+        if(!req.maintenance) return ResponseUtil.notFound(res);
         const space = await SpaceService.fetchByName(req.body['spaceName']);
         if(!space) return ResponseUtil.notFound(res);
 
         const updatedMaintenance  = await MaintenanceController.createMaintenanceModel(req);
-        updatedMaintenance.id = maintenance.id;
+        updatedMaintenance.id = req.maintenance.id;
         await MaintenanceService.update(updatedMaintenance);
         ResponseUtil.ok(res);
     }
 
     public static async deleteMaintenance(req: Request, res: Response):Promise<void> {
-        const maintenanceId = req.params['maintenance_id'] as unknown as number;
-        if (!maintenanceId){
-            return ResponseUtil.missingAttribute(res);
-        }
-
-        const maintenance = await MaintenanceService.fetchById(maintenanceId);
-        if(!maintenance) return ResponseUtil.notFound(res);
-
-        await MaintenanceService.delete(maintenance);
+        if(!req.maintenance) return ResponseUtil.notFound(res);
+        await MaintenanceService.delete(req.maintenance);
         ResponseUtil.ok(res);
     }
 

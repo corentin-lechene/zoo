@@ -8,6 +8,7 @@ import {
     OneToMany
 } from 'typeorm';
 import {Maintenance} from "./maintenance.entity";
+import {SpaceHistory} from "./spaceHistory.entity";
 
 export enum SpaceStatus {
     OPEN = 'OPEN',
@@ -54,6 +55,9 @@ export class Space {
 
     @OneToMany(() => Maintenance, (maintenance) => maintenance.space)
     maintenances: Maintenance[];
+
+    @OneToMany(() => SpaceHistory, (spaceHistory) => spaceHistory.space)
+    spacesHistories: SpaceHistory[];
 
     @CreateDateColumn()
     createdAt: Date;
