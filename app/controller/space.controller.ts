@@ -1,5 +1,5 @@
 import {Request, Response} from "express";
-import {SpaceService, StatisticsService} from "../service";
+import {SpaceService, StatisticsService, TicketService} from "../service";
 import {ResponseUtil} from "../util";
 import {RoleEnum, Space, SpaceStatus, typeStatsEnum} from "../entity";
 import dayjs from "../config/dayjs.config";
@@ -119,19 +119,23 @@ export class SpaceController {
 
     public static async validateUserAccess(req: Request, res: Response): Promise<void> {
         const spaceId = req.params["space_id"] as unknown as number;
-        if (!spaceId) {
+        const ticketId = req.params["ticket_id"] as unknown as number;
+
+        if (!spaceId || !ticketId) {
             return ResponseUtil.missingAttribute(res);
         }
 
         const space = await SpaceService.fetchById(spaceId);
-        if (!space) return ResponseUtil.notFound(res);
-
-        if (!req.user) {
-            return ResponseUtil.unauthorized(res);
+        if (!space) {
+            return ResponseUtil.notFound(res);
         }
 
-        const userRoles = req.user.roles.map((role) => role.name);
-        if (!userRoles.some(role => role === RoleEnum.ADMIN)) {
+        const ticket = await TicketService.fetchById(ticketId);
+        if (!ticket) {
+            return ResponseUtil.notFound(res);
+        }
+
+        if (!TicketService.isValidToEnter(ticket)) {
             return ResponseUtil.forbidden(res);
         }
 
