@@ -1,8 +1,9 @@
 import {DataSource} from "typeorm";
 import {config} from 'dotenv';
-import {Role, RoleEnum} from "../entity";
-import {RoleService} from "../service";
+import {Employee, EmployeeStatus, Role, RoleEnum} from "../entity";
+import {EmployeeService, RoleService} from "../service";
 import dayjs from './dayjs.config';
+import PwdUtil from "../util/pwd.util";
 
 config();
 
@@ -42,9 +43,36 @@ async function upsertRoles() {
     await Promise.all(rolesToAdd);
 }
 
+async function createAdmin() {
+    if(await EmployeeService.fetchByIdentifier('admin', 'admin')) {
+        return;
+    }
+
+    // fetch role
+    const defaultRole = await RoleService.fetchByName(RoleEnum.ADMIN);
+    if(!defaultRole) {
+        console.error("cannot get admin");
+        process.exit();
+        return;
+    }
+
+    const employee = new Employee();
+    employee.firstname = 'admin';
+    employee.lastname = 'dmin';
+    employee.password = await PwdUtil.hash('admin');
+    employee.roles = [defaultRole];
+    employee.status = EmployeeStatus.UNKNOWN;
+    const resEmployee = await EmployeeService.create(employee);
+    if(!resEmployee) {
+        console.error("cannot create admin");
+        process.exit();
+    }
+}
+
 export async function initialize_typeorm(db: DataSource) {
     await db.initialize();
     await upsertRoles();
+    await createAdmin();
 }
 
 
