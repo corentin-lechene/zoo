@@ -10,6 +10,7 @@
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
     "moduleResolution": "Node",
+    "allowSyntheticDefaultImports": true
   },
   "exclude": [
     "node_modules",

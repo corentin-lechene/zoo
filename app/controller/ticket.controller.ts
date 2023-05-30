@@ -1,8 +1,9 @@
-import {Request, Response} from "express";
+import e, {Request, Response} from "express";
 import {PassService, TicketService, VisitorService} from "../service";
 import {ResponseUtil} from "../util";
 import {Ticket, TicketStatus} from "../entity";
 import {TicketHistoryService} from "../service/ticketHistoty.service";
+import {SpaceHistoryService} from "../service/spaceHistory.service";
 
 export class TicketController {
 
@@ -31,6 +32,32 @@ export class TicketController {
         await TicketService.update(ticket);
         await TicketHistoryService.attachToTicket(ticket)
         ResponseUtil.ok(res);
+    }
+
+    public static async exit(req: Request, res: Response): Promise<void> {
+        const ticketId = req.params['ticket_id'] as unknown as number;
+        if(!ticketId) {
+            return ResponseUtil.missingAttribute(res);
+        }
+
+        const ticket = await TicketService.fetchById(ticketId);
+        if(!ticket) {
+            return ResponseUtil.notFound(res);
+        }
+
+        const ticketHistory = await TicketHistoryService.fetchByTicket(ticketId);
+        if(!ticketHistory) return ResponseUtil.badRequest(res);
+
+        const spaceHistory = await SpaceHistoryService.fetchByTicket(ticketId);
+        if(spaceHistory) return ResponseUtil.badRequest(res);
+
+        await TicketHistoryService.exit(ticketHistory);
+        ResponseUtil.ok(res);
+    }
+
+    public static async fetchVisitorsNumber(req: Request, res: Response): Promise<Promise<e.Response> | Promise<void>> {
+        const realVisitorsNumber = await TicketHistoryService.getRealVisitorsNumber();
+        return res.status(200).json({visitors_number : realVisitorsNumber});
     }
 
     public static async fetchAllTickets(req: Request, res: Response): Promise<void> {

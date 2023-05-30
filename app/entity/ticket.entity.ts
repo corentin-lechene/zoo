@@ -2,12 +2,12 @@ import {Entity, PrimaryGeneratedColumn, Column, JoinColumn, ManyToOne, DeleteDat
 import {Visitor} from "./visitor.entity";
 import {Pass} from "./pass.entity";
 import {TicketHistory} from "./ticketHistory.entity";
+import {SpaceHistory} from "./spaceHistory.entity";
 
 export enum TicketStatus {
     VALID = "Valid",
     USED = "Used",
 }
-
 
 @Entity({ name: 'ticket' })
 export class Ticket {
@@ -27,6 +27,9 @@ export class Ticket {
 
     @OneToMany(() => TicketHistory, (ticketHistory) => ticketHistory.ticket)
     ticketHistory: TicketHistory[];
+
+    @OneToMany(() => SpaceHistory, (spacesHistories) => spacesHistories.ticket)
+    spacesHistories: SpaceHistory[];
 
     @Column({name: 'expire_at', nullable: true, default: null})
     expireAt?: Date;

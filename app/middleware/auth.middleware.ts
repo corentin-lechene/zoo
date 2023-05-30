@@ -1,6 +1,6 @@
 import { Request, RequestHandler } from "express";
 import { ResponseUtil } from "../util";
-import {Employee, RoleEnum} from "../entity";
+import { Employee, RoleEnum } from "../entity";
 import {EmployeeService} from "../service";
 import JwtUtil from "../util/jwt.util";
 

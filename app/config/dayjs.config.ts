@@ -8,6 +8,11 @@ import * as isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
 import * as isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
 import * as isBetween from 'dayjs/plugin/isBetween'
 
+export enum FormatDayjs {
+    FORMAT_DATE = "YYYY-MM-DD",
+    FORMAT_DATE_HOUR = "YYYY-MM-DD HH:mm:ss"
+}
+
 const customParseFormat = require('dayjs/plugin/customParseFormat');
 
 dayjs.extend(localizedFormat);

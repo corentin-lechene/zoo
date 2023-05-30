@@ -9,4 +9,5 @@ export * as maintenanceRoute from './maintenance.route';
 export * as animalRoute from './animal.route';
 export * as speciesRoute from './species.route';
 export * as trackingBookRoute from './trackingBook.route';
+export * as statisticsRoute from './statistics.route';
 export * as authRoute from './auth.route';

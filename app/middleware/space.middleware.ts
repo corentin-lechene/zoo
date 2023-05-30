@@ -1,7 +1,13 @@
 import {Request, RequestHandler} from "express";
 import {ResponseUtil} from "../util";
-import {SpaceStatus, TypeEnum} from "../entity";
+import {Space, StatusEnum, TypeEnum, SpaceStatus, TypeEnum} from "../entity";
+import {SpaceService} from "../service";
 
+declare module 'express' {
+    export interface Request {
+        space?: Space;
+    }
+}
 export function checkBody(): RequestHandler {
     return async function (req: Request, res, next) {
         //Check si tous les champs sont remplis
@@ -28,6 +34,33 @@ export function checkBody(): RequestHandler {
         }
 
         //TODO :check le bon format des dates
+        next();
+    }
+}
+
+export function checkBodyManageSpace(): RequestHandler {
+    return async function (req: Request, res, next) {
+        //Check si tous les champs sont remplis
+        if(!req.params['space_id'] || !req.body['ticket_id']) {
+            return ResponseUtil.missingAttribute(res);
+        }
+
+        //Check le type
+        if(typeof req.body['ticket_id'] != "number") {
+            return ResponseUtil.badRequest(res);
+        }
+        next();
+    }
+}
+
+export function checkIfSpaceExist(): RequestHandler {
+    return  async function(req: Request, res, next){
+        const spaceId = req.params['space_id'] as unknown as number;
+        if (!spaceId) return ResponseUtil.missingAttribute(res);
+
+        const space = await SpaceService.fetchById(spaceId);
+        if(!space) return ResponseUtil.notFound(res);
+        req.space = space;
         next();
     }
 }
