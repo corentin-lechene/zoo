@@ -1,7 +1,7 @@
 import {Request, Response} from "express";
 import {SpaceService, StatisticsService} from "../service";
 import {ResponseUtil} from "../util";
-import {Space, StatusEnum, typeStatsEnum} from "../entity";
+import {Space, StatusEnum, SpaceStatus, typeStatsEnum} from "../entity";
 import dayjs from "../config/dayjs.config";
 import {MaintenanceService} from "../service/maintenance.service";
 import {SpaceHistoryService} from "../service/spaceHistory.service";
@@ -32,6 +32,37 @@ export class SpaceController {
         updatedSpace.id = req.space.id;
         await SpaceService.update(updatedSpace);
         ResponseUtil.ok(res);
+    }
+
+    public static async updateStatus(req: Request, res: Response): Promise<void> {
+        const spaceId = req.params['space_id'] as unknown as number;
+        const status = req.body['status'] as unknown as string;
+
+        if(!spaceId || !status) {
+            return ResponseUtil.missingAttribute(res);
+        }
+
+        if(![SpaceStatus.OPEN, SpaceStatus.CLOSED].some(s => s === status)) {
+            return ResponseUtil.invalidAttributes(res);
+        }
+
+        const space = await SpaceService.fetchById(spaceId);
+        if(!space) {
+            return ResponseUtil.notFound(res);
+        }
+
+        if(space.status === SpaceStatus.UNDER_MAINTENANCE) {
+            return ResponseUtil.badRequest(res, 'Space under maintenance');
+        }
+
+        space.status = status as SpaceStatus;
+        try {
+            await SpaceService.update(space);
+            ResponseUtil.ok(res);
+        } catch (e) {
+            console.error(e);
+            ResponseUtil.serverError(res);
+        }
     }
 
     public static async deleteSpace(req: Request, res: Response):Promise<void> {
@@ -80,7 +111,10 @@ export class SpaceController {
 
         if(!space || !spaceHistory) return ResponseUtil.notFound(res);
 
+
         await SpaceHistoryService.delete(spaceHistory);
+        space.status = SpaceStatus.UNDER_MAINTENANCE;
+        await SpaceService.update(space);
         ResponseUtil.ok(res);
     }
 

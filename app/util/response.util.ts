@@ -2,6 +2,7 @@ import {Response} from "express";
 
 export class ResponseUtil {
     public static readonly MISSING_ATTRIBUTE  = "Missing Attribute";
+    public static readonly INVALID_ATTRIBUTES = "Invalid Attributes";
     public static readonly UNAUTHORIZED  = "Unauthorized";
     public static readonly FORBIDDEN  = "Forbidden";
     public static readonly NOT_FOUND  = "Not Found";
@@ -14,6 +15,10 @@ export class ResponseUtil {
 
     public static missingAttribute(res: Response): void {
         res.status(400).send(this.MISSING_ATTRIBUTE);
+    }
+
+    public static invalidAttributes(res: Response): void {
+        res.status(400).send(this.INVALID_ATTRIBUTES);
     }
 
     public static alreadyExist(res: Response) {

@@ -10,7 +10,7 @@ import {
 import {Maintenance} from "./maintenance.entity";
 import {SpaceHistory} from "./spaceHistory.entity";
 
-export enum StatusEnum {
+export enum SpaceStatus {
     OPEN = 'OPEN',
     CLOSED = 'CLOSED',
     UNDER_MAINTENANCE = 'UNDER MAINTENANCE'

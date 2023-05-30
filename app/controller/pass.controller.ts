@@ -3,6 +3,9 @@ import {PassService} from "../service";
 import {ResponseUtil} from "../util";
 import {Pass} from "../entity";
 import {SpaceService} from "../service";
+import {validate} from "class-validator";
+import dayjs = require("dayjs");
+import {ManipulateType} from "dayjs";
 
 export class PassController {
     public static async fetchAllPasses(req: Request, res: Response): Promise<void> {
@@ -28,10 +31,23 @@ export class PassController {
         const price = req.body['price'] as unknown as number;
         const spaceIds = req.body['space_ids'] as unknown as number[];
         const course = req.body['course'] as unknown as boolean;
+        const limit = req.body['limit'] as unknown as number;
+        const frequency = req.body['frequency'] as unknown as string;
+        const duration = req.body['duration'] as unknown as number;
+        const period = req.body['period'] as unknown as string;
+        const days = req.body['days'] as unknown as  number[];
+        const entryHour = req.body['entry_hour'] as unknown as string;
+        const endHour = req.body['end_hour'] as unknown as string;
 
-        if(!name || !price) {
+        //
+        if(!name || !price || !spaceIds || !course || !duration || !period || !entryHour || !endHour) {
             return ResponseUtil.missingAttribute(res);
         }
+        //
+        if(!dayjs(entryHour, 'HH:mm').isValid() || !dayjs(endHour, 'HH:mm').isValid()) {
+            return ResponseUtil.badRequest(res, 'Hours');
+        }
+
 
         const spaces = await SpaceService.fetchByIds(spaceIds);
 
@@ -40,7 +56,23 @@ export class PassController {
         newPass.price = price;
         newPass.access = spaces;
         newPass.course = course;
-        await PassService.create(newPass);
+        newPass.limit = limit;
+        newPass.frequency = frequency as ManipulateType;
+        newPass.duration = duration;
+        newPass.period = period as ManipulateType;
+        newPass.days = days;
+        newPass.entryHour = entryHour;
+        newPass.endHour = endHour;
+
+        const errors = await validate(newPass);
+        if(errors.length > 0) {
+            return ResponseUtil.badRequest(res, 'Invalid Form');
+        }
+
+        const requestNewPass = await PassService.create(newPass);
+        if (!requestNewPass) {
+            return ResponseUtil.serverError(res);
+        }
         ResponseUtil.created(res);
     }
 

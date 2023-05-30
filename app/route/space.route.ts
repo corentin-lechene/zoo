@@ -1,7 +1,7 @@
 import * as express from 'express';
 import {SpaceController} from "../controller/space.controller";
 import {checkBody, checkBodyManageSpace, checkIfSpaceExist} from "../middleware/space.middleware";
-import {checkUserRoles} from "../middleware";
+import {checkUserRoles, checkUserToken} from "../middleware";
 import {RoleEnum} from "../entity";
 
 const router = express.Router();
@@ -23,6 +23,8 @@ router.put('/spaces/:space_id', express.json(), checkBody(), checkIfSpaceExist()
 router.put('/spaces/underMaintenance/:space_id', express.json(), checkUserRoles([RoleEnum.ADMIN]), SpaceController.underMaintenanceSpace.bind(this));
 
 router.delete('/spaces/:space_id', checkIfSpaceExist(), SpaceController.deleteSpace.bind(this));
+router.put('/spaces/:space_id/status', checkUserToken(), checkUserRoles([RoleEnum.ADMIN]), express.json(), SpaceController.updateStatus.bind(this));
+router.put('/spaces/underMaintenance/:space_id', express.json(), SpaceController.underMaintenanceSpace.bind(this));
 
 router.delete('/spaces/:space_id/exit', express.json(), checkBodyManageSpace(), SpaceController.exitSpace.bind(this));
 
