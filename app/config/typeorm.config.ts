@@ -13,7 +13,7 @@ export const db = new DataSource({
     type: dbConfig.type,
     host: dbConfig.HOST,
     port: process.env.MYSQL_PORT as unknown as number || 3306,
-    username: dbConfig.USERNAME,
+    username: dbConfig.USER,
     password: dbConfig.PASSWORD,
     database: dbConfig.DATABASE,
     timezone: dayjs().tz().format('Z'),

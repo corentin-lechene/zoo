@@ -1,11 +1,11 @@
 {
-  "name": "green-town",
+  "name": "zoo-api",
   "version": "0.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon -e ts --exec \"npm run build && npm run start\"",
-    "docker": "docker build -t image-zoo -f ./app/config/Dockerfile ./app/config/ && docker run --name zoo  -e MYSQL_PASSWORD=root -e MYSQL_DATABASE=zoo -e MYSQL_ROOT_PASSWORD=root -p 3307:3306 -d image-zoo",
+    "docker": "docker build -t image-zoo -f ./app/config/Dockerfile ./app/config/ && docker run --name zoo -e MYSQL_PASSWORD=root -e MYSQL_DATABASE=zoo -e MYSQL_ROOT_PASSWORD=root -p 3307:3306 -d image-zoo",
     "build": "tsc",
     "start": "node dist/index.js",
     "test": "jest"
