@@ -135,9 +135,9 @@ export class SpaceController {
             return ResponseUtil.notFound(res);
         }
 
-        if (!TicketService.isValidToEnter(ticket)) {
-            return ResponseUtil.forbidden(res);
-        }
+        //todo 1. vérifier que dans le ticket il y a l'espace
+        //todo 2. vérifier que si c'est un parcours qu'il n'est pas déjà entré dans cet espace (pass.course)
+
 
         ResponseUtil.ok(res, "User has access to the space");
     }

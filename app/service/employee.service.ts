@@ -6,9 +6,9 @@ export class EmployeeService {
     public static async fetchEmployeeWhoWorks(): Promise<Employee[]> {
         return db.getRepository(Employee).find({
             where: {
-                status: EmployeeStatus.PRESENT
+                status: EmployeeStatus.PRESENT,
             },
-            relations: {roles: true}
+            relations: {roles: true},
         });
     }
     public static async fetchAll(): Promise<Employee[]> {

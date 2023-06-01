@@ -15,9 +15,7 @@ export class VisitorController {
         }
 
         const visitor = await VisitorService.fetchById(visitorId);
-        if(!visitor) {
-            return ResponseUtil.notFound(res);
-        }
+        console.log(visitor!.lastname);
 
         res.status(200).json(visitor);
     }
