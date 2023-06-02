@@ -14,7 +14,7 @@ router.post('/maintenances', express.json(), checkUserToken(), checkUserRoles([R
 
 router.delete('/maintenances/:maintenance_id', checkUserToken(), checkUserRoles([RoleEnum.ADMIN]), checkIfMaintenanceExist(), MaintenanceController.deleteMaintenance.bind(this));
 
-router.put('/maintenances/:maintenance_id', express.json(), checkBody(), checkIfMaintenanceExist(), MaintenanceController.updateMaintenance.bind(this));
+router.put('/maintenances/:maintenance_id', express.json(), checkUserToken(), checkUserRoles([RoleEnum.ADMIN]), checkBody(), checkIfMaintenanceExist(), MaintenanceController.updateMaintenance.bind(this));
 
 
 module.exports = router;

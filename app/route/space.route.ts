@@ -8,29 +8,25 @@ const router = express.Router();
 
 router.get('/spaces', SpaceController.fetchAllSpaces.bind(this));
 
-router.get('/spaces/:space_id', checkIfSpaceExist(), SpaceController.fetchSpaceById.bind(this));
+router.get('/spaces/:space_id', checkIfSpaceExist(),SpaceController.fetchSpaceById.bind(this));
 
-router.get('/spaces/:space_id/actualVisitors', SpaceController.fetchVisitorsNumber.bind(this));
+router.get('/spaces/:space_id/actualVisitors', checkUserToken(), SpaceController.fetchVisitorsNumber.bind(this));
 
-router.get('/spaces/:space_id/bestMonthToMaintain', SpaceController.fetchBestMonthToMaintain.bind(this));
+router.get('/spaces/:space_id/bestMonthToMaintain', checkUserToken(), checkUserRoles([RoleEnum.ADMIN]), SpaceController.fetchBestMonthToMaintain.bind(this));
 
-router.post('/spaces', express.json(), checkUserToken(), checkBody(), SpaceController.createSpace.bind(this));
+router.post('/spaces', express.json(), checkUserToken(), checkUserRoles([RoleEnum.ADMIN]), checkBody(), SpaceController.createSpace.bind(this));
 
-router.put('/spaces/:space_id', express.json(), checkUserToken(), checkBody(), SpaceController.updateSpace.bind(this));
+router.put('/spaces/:space_id', express.json(), checkUserToken(), checkUserRoles([RoleEnum.ADMIN]), checkBody(), SpaceController.updateSpace.bind(this));
 
 router.post('/spaces/:space_id/enter', express.json(), checkBodyManageSpace(), SpaceController.enterSpace.bind(this));
 
-router.get("/spaces/:space_id/validateAccess/:ticket_id", checkUserToken(), SpaceController.validateUserAccess.bind(this));
+router.get("/spaces/:space_id/validateAccess", checkUserToken(), SpaceController.validateUserAccess.bind(this));
 
-router.delete('/spaces/:space_id', checkUserRoles([RoleEnum.ADMIN]), SpaceController.deleteSpace.bind(this));
+router.delete('/spaces/:space_id', checkIfSpaceExist(), checkUserToken(), checkUserRoles([RoleEnum.ADMIN]), SpaceController.deleteSpace.bind(this));
 
-router.put('/spaces/underMaintenance/:space_id', express.json(), checkUserRoles([RoleEnum.ADMIN]), SpaceController.underMaintenanceSpace.bind(this));
-
-router.delete('/spaces/:space_id', checkIfSpaceExist(), SpaceController.deleteSpace.bind(this));
+router.put('/spaces/underMaintenance/:space_id', express.json(), checkUserToken(), checkUserRoles([RoleEnum.ADMIN]), SpaceController.underMaintenanceSpace.bind(this));
 
 router.put('/spaces/:space_id/status', checkUserToken(), checkUserRoles([RoleEnum.ADMIN]), express.json(), SpaceController.updateStatus.bind(this));
-
-router.put('/spaces/underMaintenance/:space_id', express.json(), SpaceController.underMaintenanceSpace.bind(this));
 
 router.delete('/spaces/:space_id/exit', express.json(), checkBodyManageSpace(), SpaceController.exitSpace.bind(this));
 
