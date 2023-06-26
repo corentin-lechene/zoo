@@ -26,7 +26,7 @@ export function checkUserToken(): RequestHandler {
         const token = split[1];
         const user = await EmployeeService.fetchByToken(token);
         if(!user) {
-            return ResponseUtil.unauthorized(res);
+            return ResponseUtil.badRequest(res, "User Not Found With Token");
         }
 
         if (JwtUtil.isTokenExpired(user.token)) {

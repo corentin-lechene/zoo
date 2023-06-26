@@ -1,6 +1,7 @@
 import {Request, RequestHandler} from "express";
 import {ResponseUtil} from "../util";
 import {Animal} from "../entity";
+import * as dayjs from "dayjs";
 
 export function checkTrackingBookBody(): RequestHandler {
     return async function (req: Request, res, next){
@@ -10,9 +11,8 @@ export function checkTrackingBookBody(): RequestHandler {
         }
 
         //Check les types
-        if(typeof req.body['treatmentDescription'] !== "string" || !isDate(req.body['treatmentDate']) ||
-            !(req.body['animal'] instanceof Animal)) {
-            return ResponseUtil.badRequest(res);
+        if(typeof req.body['treatmentDescription'] !== "string" || !dayjs(req.body['treatmentDate'], "YYYY-MM-DD").isValid() ) {
+            return ResponseUtil.invalidAttributes(res);
         }
         next();
     }

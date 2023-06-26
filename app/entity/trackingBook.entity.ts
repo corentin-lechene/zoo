@@ -3,7 +3,6 @@ import {Length,} from 'class-validator';
 
 import {Animal} from "./animal.entity";
 @Entity({ name: 'tracking_book'})
-//TODO AJOUTER LA RELATION AVEC EMPLOYEE QUAND L'ENTITE SERA DISPO
 export class TrackingBook {
 
     @PrimaryGeneratedColumn({ name: 'tracking_book_id' })

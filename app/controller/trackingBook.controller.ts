@@ -3,6 +3,7 @@ import { ResponseUtil } from "../util";
 import {TrackingBookService} from "../service";
 import { Animal, TrackingBook } from "../entity";
 import { validate } from "class-validator";
+import * as dayjs from "dayjs";
 
 export class TrackingBookController {
 
@@ -27,7 +28,7 @@ export class TrackingBookController {
     public static async createTrackingBook(req: Request, res: Response): Promise<void> {
         const {treatmentDescription, treatmentDate, animal} = req.body as {
             treatmentDescription: string;
-            treatmentDate: Date,
+            treatmentDate: string,
             animal: Animal
         };
 
@@ -37,7 +38,7 @@ export class TrackingBookController {
 
         const trackingBook = new TrackingBook();
         trackingBook.treatmentDescription = treatmentDescription;
-        trackingBook.treatmentDate = treatmentDate;
+        trackingBook.treatmentDate = dayjs(treatmentDate, 'YYYY-MM-DD').toDate();
         trackingBook.animal = animal;
 
         const errors = await validate(trackingBook);

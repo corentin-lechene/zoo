@@ -5,6 +5,9 @@ import {FindOptionsWhere, UpdateResult} from "typeorm";
 export class SpaceService {
     public static async fetchAll(): Promise<Space[]> {
         return db.getRepository(Space).find({
+            relations: {
+                maintenances: true
+            }
         });
     }
 

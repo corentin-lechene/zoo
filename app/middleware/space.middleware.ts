@@ -13,7 +13,7 @@ export function checkBody(): RequestHandler {
         //Check si tous les champs sont remplis
         if(!req.body['name'] || !req.body['description'] || !req.body['image'] || !req.body['capacity'] ||
             !req.body['type'] || !req.body['openingTime'] || !req.body['closureHour'] ||
-            !req.body['accessHandicap'] || !req.body['status']) {
+            typeof req.body['accessHandicap'] != "boolean" || !req.body['status']) {
             return ResponseUtil.missingAttribute(res);
         }
 
@@ -33,7 +33,6 @@ export function checkBody(): RequestHandler {
             return ResponseUtil.badRequest(res);
         }
 
-        //TODO :check le bon format des dates
         next();
     }
 }

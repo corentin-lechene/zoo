@@ -2,10 +2,11 @@ import * as express from 'express';
 import {AnimalController} from "../controller/animal.controller";
 import {checkAnimalBody} from "../middleware/animal.middleware";
 import {checkUserToken} from "../middleware";
+import {isZooOpened} from "../middleware/zoo.middleware";
 
 const router = express.Router();
 
-router.get('/animal', AnimalController.fetchAllAnimals.bind(this));
+router.get('/animal', isZooOpened(), AnimalController.fetchAllAnimals.bind(this));
 
 router.get('/animal/:animalId', AnimalController.fetchAnimalById.bind(this));
 
