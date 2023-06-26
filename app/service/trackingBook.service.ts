@@ -1,5 +1,6 @@
 import { db } from '../config/typeorm.config';
-import { TrackingBook } from "../entity";
+import { TrackingBook, Animal } from "../entity";
+
 
 export class TrackingBookService {
     public static async fetchAll(): Promise<TrackingBook[]> {
@@ -15,6 +16,14 @@ export class TrackingBookService {
             where: { trackingBookId: tracking_book_id },
             relations: {animal: true}
         });
+    }
+
+    public static async fetchByAnimalId(animalId: number): Promise<TrackingBook[]> {
+        return db.getRepository(TrackingBook)
+            .createQueryBuilder("trackingBook")
+            .innerJoin("trackingBook.animal", "animal")
+            .where("animal.animalId = :animalId", { animalId })
+            .getMany();
     }
 
     public static async create(trackingBook: TrackingBook): Promise<TrackingBook> {
