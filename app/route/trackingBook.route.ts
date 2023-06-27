@@ -10,7 +10,9 @@ router.get('/trackingBook', TrackingBookController.fetchAllTrackingBooks.bind(th
 
 router.get('/trackingBook/:trackingBookId', TrackingBookController.fetchTrackingBookById.bind(this));
 
-router.post('/trackingBook', express.json(), checkUserToken(), checkUserRoles([RoleEnum.VETERINARIAN]), checkTrackingBookBody(),
+router.get('/trackingBook/animal/:animalId', TrackingBookController.fetchTrackingBooksByAnimalId.bind(this));
+
+router.post('/trackingBook', express.json(),checkTrackingBookBody(),
     TrackingBookController.createTrackingBook.bind(this)
 );
 

@@ -25,6 +25,20 @@ export class TrackingBookController {
         res.json(trackingBook);
     }
 
+    public static async fetchTrackingBooksByAnimalId(req: Request, res: Response): Promise<void> {
+        const animalId = req.params["animalId"] as unknown as number;
+        if (!animalId || animalId < 0){
+            return ResponseUtil.badRequest(res);
+        }
+
+        const trackingBooks = await TrackingBookService.fetchByAnimalId(animalId);
+        if(trackingBooks.length === 0) {
+            return ResponseUtil.notFound(res);
+        }
+
+        res.json(trackingBooks);
+    }
+
     public static async createTrackingBook(req: Request, res: Response): Promise<void> {
         const {treatmentDescription, treatmentDate, animal} = req.body as {
             treatmentDescription: string;

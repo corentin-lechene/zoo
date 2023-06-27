@@ -17,6 +17,14 @@ export class TrackingBookService {
         });
     }
 
+    public static async fetchByAnimalId(animalId: number): Promise<TrackingBook[]> {
+        return db.getRepository(TrackingBook)
+            .createQueryBuilder("trackingBook")
+            .innerJoin("trackingBook.animal", "animal")
+            .where("animal.animalId = :animalId", { animalId })
+            .getMany();
+    }
+
     public static async create(trackingBook: TrackingBook): Promise<TrackingBook> {
         return db.getRepository(TrackingBook).save(trackingBook);
     }
