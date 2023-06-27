@@ -9,7 +9,7 @@ const router = express.Router();
 
 router.get('/spaces', SpaceController.fetchAllSpaces.bind(this));
 
-router.get('/spaces/:space_id',  checkUserToken(), checkIfSpaceExist(),SpaceController.fetchSpaceById.bind(this));
+router.get('/spaces/:space_id', checkIfSpaceExist(),SpaceController.fetchSpaceById.bind(this));
 
 router.get('/spaces/:space_id/actualVisitors',  checkUserToken(), checkIfSpaceExist(), SpaceController.fetchVisitorsNumber.bind(this));
 
@@ -19,11 +19,9 @@ router.post('/spaces', express.json(), checkUserToken(), checkUserRoles([RoleEnu
 
 router.put('/spaces/:space_id', express.json(), checkUserToken(), checkUserRoles([RoleEnum.ADMIN]), checkBody(), SpaceController.updateSpace.bind(this));
 
-router.post('/spaces/:space_id/enter', express.json(), checkBodyManageSpace(), SpaceController.enterSpace.bind(this));
+router.post("/spaces/:space_id/validateAccess", express.json(), checkUserToken(), isZooOpened(), SpaceController.validateUserAccess.bind(this));
 
-router.get("/spaces/:space_id/validateAccess", checkUserToken(), SpaceController.validateUserAccess.bind(this));
-
-router.delete('/spaces/:space_id', checkIfSpaceExist(), checkUserToken(), checkUserRoles([RoleEnum.ADMIN]), SpaceController.deleteSpace.bind(this));
+router.delete('/spaces/:space_id', checkUserToken(), checkUserRoles([RoleEnum.ADMIN]), checkIfSpaceExist(), SpaceController.deleteSpace.bind(this));
 
 router.put('/spaces/underMaintenance/:space_id', express.json(), checkUserToken(), checkUserRoles([RoleEnum.ADMIN]), checkUserRoles([RoleEnum.ADMIN]), SpaceController.underMaintenanceSpace.bind(this));
 

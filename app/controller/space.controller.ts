@@ -1,11 +1,10 @@
 import {Request, Response} from "express";
 import {SpaceService, StatisticsService, TicketService} from "../service";
 import {ResponseUtil} from "../util";
-import {RoleEnum, Space, SpaceStatus, typeStatsEnum} from "../entity";
+import {Space, SpaceStatus, typeStatsEnum} from "../entity";
 import dayjs from "../config/dayjs.config";
 import {MaintenanceService} from "../service/maintenance.service";
 import {SpaceHistoryService} from "../service/spaceHistory.service";
-import {TicketHistoryService} from "../service/ticketHistoty.service";
 
 export class SpaceController {
     public static async fetchAllSpaces(req: Request, res: Response): Promise<void> {
@@ -86,21 +85,6 @@ export class SpaceController {
         res.status(200).json({Month : bestMonth});
     }
 
-    public static async enterSpace(req: Request, res: Response): Promise<void> {
-        const spaceId = req.params['space_id'] as unknown as number;
-        const ticketId = req.body['ticket_id'] as unknown as number;
-
-        const space = await SpaceService.fetchById(spaceId);
-        const ticketHistory = await TicketHistoryService.fetchByTicket(ticketId);
-
-        if(!space || !ticketHistory) return ResponseUtil.notFound(res);
-        const spaceHistory = await SpaceHistoryService.fetchByTicket(ticketId);
-        if(spaceHistory) return ResponseUtil.alreadyExist(res);
-
-        await SpaceHistoryService.attachToSpaceHistory(ticketHistory.ticket, space);
-        ResponseUtil.ok(res);
-    }
-
     public static async exitSpace(req: Request, res: Response): Promise<void> {
         const spaceId = req.params['space_id'] as unknown as number;
         const ticketId = req.body['ticket_id'] as unknown as number;
@@ -119,7 +103,7 @@ export class SpaceController {
 
     public static async validateUserAccess(req: Request, res: Response): Promise<void> {
         const spaceId = req.params["space_id"] as unknown as number;
-        const ticketId = req.params["ticket_id"] as unknown as number;
+        const ticketId = req.body["ticket_id"] as unknown as number;
 
         if (!spaceId || !ticketId) {
             return ResponseUtil.missingAttribute(res);
@@ -135,10 +119,23 @@ export class SpaceController {
             return ResponseUtil.notFound(res);
         }
 
-        //todo 1. vérifier que dans le ticket il y a l'espace
-        //todo 2. vérifier que si c'est un parcours qu'il n'est pas déjà entré dans cet espace (pass.course)
+        const pass = ticket.pass;
+        if(!pass.access.some(s => s.id === space.id)) {
+            return ResponseUtil.badRequest(res, "Access denied");
+        }
 
+        if(pass.course) {
+            const curr_space = pass.access[ticket.spacesHistories.length];
+            if(!curr_space) {
+                return ResponseUtil.badRequest(res, "Access denied : course ended");
+            }
 
+            if(curr_space.id !== space.id) {
+                return ResponseUtil.badRequest(res, "Access denied : space not in pass");
+            }
+        }
+
+        await SpaceHistoryService.attachToSpaceHistory(ticket, space);
         ResponseUtil.ok(res, "User has access to the space");
     }
 

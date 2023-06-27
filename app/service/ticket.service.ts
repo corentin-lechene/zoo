@@ -75,7 +75,15 @@ export class TicketService {
     public static async fetchById(ticket_id: number): Promise<Ticket | null> {
         return db.getRepository(Ticket).findOne({
             where: {id: ticket_id},
-            relations: {visitor: true, pass: true, ticketHistory: true}
+            relations: {
+                visitor: true,
+                pass: {
+                    access: true,
+                },
+                spacesHistories: true,
+                ticketHistory: true,
+            },
+
         });
     }
 

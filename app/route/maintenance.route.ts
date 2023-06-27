@@ -6,9 +6,9 @@ import {RoleEnum} from "../entity";
 
 const router = express.Router();
 
-router.get('/maintenances', MaintenanceController.fetchAllMaintenances.bind(this));
+router.get('/maintenances', checkUserToken(), MaintenanceController.fetchAllMaintenances.bind(this));
 
-router.get('/maintenances/:maintenance_id', checkIfMaintenanceExist(), MaintenanceController.fetchMaintenanceById.bind(this));
+router.get('/maintenances/:maintenance_id', checkUserToken(), checkIfMaintenanceExist(), MaintenanceController.fetchMaintenanceById.bind(this));
 
 router.post('/maintenances', express.json(), checkUserToken(), checkUserRoles([RoleEnum.ADMIN]), checkBody(), MaintenanceController.createMaintenance.bind(this));
 
