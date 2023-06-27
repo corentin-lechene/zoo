@@ -10,4 +10,7 @@ export class Zoo {
 
     @Column({ name: 'closed_at' })
     closedAt: string;
+
+    @Column({ name: 'open', default: false })
+    open: boolean;
 }

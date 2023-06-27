@@ -9,4 +9,8 @@ export class ZooService {
             }
         })
     }
+
+    static async update(zoo: Zoo) {
+        return db.getRepository(Zoo).save(zoo);
+    }
 }

@@ -6,6 +6,8 @@ import {RoleEnum} from "../entity";
 const router = express.Router();
 
 
-router.get('/zoo/can-open', checkUserToken(), checkUserRoles([RoleEnum.ADMIN]), ZooController.canOpen.bind(this));
+router.put('/zoo/open', checkUserToken(), checkUserRoles([RoleEnum.ADMIN]), ZooController.canOpen.bind(this));
+
+router.put('/zoo/closed', checkUserToken(), checkUserRoles([RoleEnum.ADMIN]), ZooController.closed.bind(this));
 
 module.exports = router;
