@@ -1,5 +1,5 @@
 import {db} from "../config/typeorm.config";
-import {Species} from "../entity";
+import {Space, Species} from "../entity";
 
 export class SpeciesService {
     public static async fetchAll(): Promise<Species[]> {
@@ -9,6 +9,12 @@ export class SpeciesService {
     public static async fetchById(species_id: number): Promise<Species|null> {
         return db.getRepository(Species).findOne({
             where: {speciesId: species_id},
+        });
+    }
+
+    public static async fetchByName(species_name: string): Promise<Species|null> {
+        return db.getRepository(Species).findOne({
+            where: {name: species_name},
         });
     }
 

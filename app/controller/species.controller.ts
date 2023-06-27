@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { SpeciesService } from "../service";
+import {SpaceService, SpeciesService} from "../service";
 import { ResponseUtil } from "../util";
 import { Species } from "../entity";
 import { validate } from "class-validator";
@@ -29,6 +29,11 @@ export class SpeciesController {
 
         if (!name || !origin) {
             return ResponseUtil.missingAttribute(res);
+        }
+
+        const speciesName = await SpeciesService.fetchByName(req.body['name']);
+        if(speciesName){
+            return ResponseUtil.alreadyExist(res)
         }
 
         const species = new Species();
