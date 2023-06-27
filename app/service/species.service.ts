@@ -12,9 +12,9 @@ export class SpeciesService {
         });
     }
 
-    public static async fetchByName(species_name: string): Promise<Species|null> {
+    public static async fetchByNameAndOrigin(species_name: string, species_origin: string): Promise<Species|null> {
         return db.getRepository(Species).findOne({
-            where: {name: species_name},
+            where: {name: species_name, origin: species_origin},
         });
     }
 

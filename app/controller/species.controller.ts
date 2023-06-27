@@ -31,9 +31,9 @@ export class SpeciesController {
             return ResponseUtil.missingAttribute(res);
         }
 
-        const speciesName = await SpeciesService.fetchByName(req.body['name']);
-        if(speciesName){
-            return ResponseUtil.alreadyExist(res)
+        const specie = await SpeciesService.fetchByNameAndOrigin(req.body['name'], req.body['origin']);
+        if(specie){
+            return ResponseUtil.alreadyExist(res);
         }
 
         const species = new Species();
