@@ -1,0 +1,37 @@
+version: '3.1'
+
+services:
+
+  api:
+    build: .
+    image: zoo_api
+    container_name: api-container
+    restart: always
+    depends_on:
+      - mysql
+    ports:
+      - "${APP_PORT}:3000"
+    environment:
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USERNAME=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_TYPE=${MYSQL_TYPE}
+
+  mysql:
+    image: mysql:latest
+    container_name: db-container
+    restart: always
+    ports:
+      - "${MYSQL_PORT}:3306"
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+volumes:
+  mysql-data:
